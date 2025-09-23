@@ -5,6 +5,7 @@ parent: SEISMIC algorithm
 grand_parent: Neural sparse search
 great_grand_parent: AI search
 nav_order: 10
+has_math: true
 ---
 
 # SEISMIC configuration
@@ -52,14 +53,14 @@ This ensures optimal performance across different data scales while maintaining 
 
 ### SEISMIC field type
 
-Configure sparse vector fields with the `sparse_tokens` type and SEISMIC algorithm:
+Configure sparse vector fields with the `sparse_vector` type and SEISMIC algorithm:
 
 ```json
 {
   "mappings": {
     "properties": {
       "sparse_embedding": {
-        "type": "sparse_tokens",
+        "type": "sparse_vector",
         "method": {
           "name": "seismic",
           "parameters": {
@@ -84,7 +85,7 @@ You can configure multiple sparse ANN fields with different hyper-parameters in 
   "mappings": {
     "properties": {
       "title_vector": {
-        "type": "sparse_tokens",
+        "type": "sparse_vector",
         "method": {
           "name": "seismic",
           "parameters": {
@@ -96,7 +97,7 @@ You can configure multiple sparse ANN fields with different hyper-parameters in 
         }
       },
       "content_vector": {
-        "type": "sparse_tokens",
+        "type": "sparse_vector",
         "method": {
           "name": "seismic",
           "parameters": {
@@ -255,7 +256,7 @@ As a kind of ANN algorithm, SEISMIC does not aim at providing exact search but p
 **SEISMIC not activating**
 - Check that `index.sparse: true` is set
 - Verify segment size exceeds `approximate_threshold`
-- Confirm field type is `sparse_tokens`
+- Confirm field type is `sparse_vector`
 
 **High memory usage**
 - Reduce `n_postings` parameter
