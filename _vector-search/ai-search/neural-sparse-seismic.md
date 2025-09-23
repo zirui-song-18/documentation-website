@@ -13,11 +13,9 @@ redirect_from:
 Introduced 3.3.0
 {: .label .label-purple }
 
-SEISMIC (from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is an approximate nearest neighbor (ANN) algorithm specifically designed to accelerate neural sparse search. Unlike traditional sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors. Now, we integrate this algorithm into OpenSearch Neural-Search plugin.
+SEISMIC (**S**pilled Clust**e**ring of **I**nverted Lists with **S**ummaries for **M**aximum **I**nner Produ**c**t Search from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is an **A**pproximate **N**earest **N**eighbor (ANN) algorithm specifically designed to accelerate neural sparse search. Unlike traditional sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors. Now, Seismic algorithm is available in the Neural-Search plugin to provide outstanding sparse vector query performance.
 
 SEISMIC addresses the performance challenges that arise when neural sparse search is applied to large-scale datasets with billions of vectors. While neural sparse search traditionally uses inverted indexes for efficiency, query performance can deteriorate substantially at unprecedented data volumes. SEISMIC introduces a novel approach using clustered posting lists and approximate retrieval techniques to maintain fast query speeds even as data scales exponentially.
-
-Before SEISMIC, Neural-Search plugin has already deployed two-phase query optimization (introduced in OpenSearch version 2.15), which provides 4.15x to 6.87x performance improvements. SEISMIC takes this further by implementing advanced clustering techniques on posting lists, achieving at least 4.18x query speed improvements compared to two-phase queries while maintaining ≥90% recall accuracy. Compared to the plain Neural-Sparse, SEISMIC even achieves a 52.11x to 81.57x query speed improvements.
 
 ## How SEISMIC works
 
@@ -48,7 +46,6 @@ During query execution, SEISMIC employs an efficient retrieval process:
 2. **Document-level scoring**: For selected clusters, SEISMIC examines individual documents within those clusters, computing exact dot product scores between the query and document vectors retrieved from the forward index.
 
 This approach dramatically reduces the number of documents that need to be scored, resulting in significant performance improvements while maintaining high recall accuracy.
-#
 # Key benefits
 
 SEISMIC offers several advantages over traditional neural sparse search approaches:

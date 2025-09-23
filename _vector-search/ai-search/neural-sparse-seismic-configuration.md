@@ -11,21 +11,20 @@ nav_order: 10
 
 This page provides comprehensive configuration guidance for the SEISMIC algorithm in OpenSearch neural sparse search.
 
-SEISMIC is an approximate nearest neighbor (ANN) algorithm designed to accelerate neural sparse vector queries by organizing documents into clusters with summary vectors, enabling efficient pruning during search operations. Unlike traditional neural sparse search that relies solely on inverted indexes, SEISMIC maintains both a forward index of sparse vectors and clustered posting lists to achieve significant query performance improvements.
+SEISMIC is an **A**pproximate **N**earest **N**eighbor (ANN) algorithm designed to accelerate neural sparse vector queries by organizing documents into clusters with summary vectors, enabling efficient pruning during search operations. Unlike traditional neural sparse search that relies solely on inverted indexes, SEISMIC maintains both a forward index of sparse vectors and clustered posting lists to achieve significant query performance improvements.
 
 ## Prerequisites
 
 Before configuring SEISMIC, ensure you have:
 
-- OpenSearch 2.15 or later with the neural-search plugin installed
-- Sufficient cluster resources for SEISMIC index building and caching
-- Understanding that SEISMIC is an indexing and query optimization technique, not a model
+- OpenSearch 2.11 or later with the neural-search plugin installed
+- Sufficient cluster resources (CPU & JVM memory) for SEISMIC index building and caching
 
 ## Index configuration
 
 ### Enable SEISMIC for an index
 
-To use SEISMIC, you must enable sparse ANN at the index level:
+To use SEISMIC, you must enable sparse setting at the index level:
 
 ```json
 PUT /seismic-documents
@@ -64,10 +63,10 @@ Configure sparse vector fields with the `sparse_tokens` type and SEISMIC algorit
         "method": {
           "name": "seismic",
           "parameters": {
-            "n_postings": 50,
+            "n_postings": 300,
             "cluster_ratio": 0.1,
             "summary_prune_ratio": 0.4,
-            "approximate_threshold": 100000
+            "approximate_threshold": 1000000
           }
         }
       }
@@ -78,7 +77,7 @@ Configure sparse vector fields with the `sparse_tokens` type and SEISMIC algorit
 
 ### Multiple sparse fields
 
-You can configure multiple sparse ANN fields in the same index:
+You can configure multiple sparse ANN fields with different hyper-parameters in the same index:
 
 ```json
 {
@@ -135,6 +134,23 @@ GET /seismic-documents/_search
   }
 }
 ```
+### Raw Vector SEISMIC query
+In addition, you can also prepare sparse vectors in advance so that you can send a raw vector as a query. Please note that you should use int token id here instead of raw text.
+```json
+GET /seismic-documents/_search
+{
+  "query": {
+    "neural_sparse": {
+      "content_vector": {
+        "query_tokens": [123: 0.1234, 345: 0.3456, 567: 0.5678],
+        "k": 10,
+        "top_n": 10,
+        "heap_factor": 1.0
+      }
+    }
+  }
+}
+```
 
 ## Parameters reference
 
@@ -146,27 +162,27 @@ GET /seismic-documents/_search
 
 ### Algorithm parameters
 
-| Parameter | Type | Required | Description | Default | Example |
-|-----------|------|----------|-------------|---------|---------|
-| `name` | String | Yes | Algorithm name | - | `"seismic"` |
-| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count` | `4000` |
-| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | `0.15` |
-| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | `0.3` |
-| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | `500000` |
+| Parameter | Type | Required | Description | Default | Range | Example |
+|-----------|------|----------|-------------|---------|---------|---------|
+| `name` | String | Yes | Algorithm name | - | - | `"seismic"` |
+| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count` | $> 0$ | `4000` |
+| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $(0,1)$ | `0.15` |
+| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $(0,1]$ | `0.3` |
+| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $\geq0$ | `500000` |
 
 ### Query parameters
 
-| Parameter | Type | Required | Description | Default | Example |
-|-----------|------|----------|-------------|---------|---------|
-| `query_text` | String | No* | Text to encode and search | - | `"machine learning"` |
-| `query_tokens` | Object | No* | Pre-encoded token map | - | `{"token": 0.8}` |
-| `model_id` | String | Yes** | Sparse encoding model ID | - | `"abc123def456"` |
-| `k` | Integer | Yes | Number of results to return | - | `10` |
-| `top_n` | Integer | No | Query token pruning limit | `10` | `15` |
-| `heap_factor` | Float | No | Recall vs performance tuning | `1.0` | `1.5` |
-| `filter` | Object | No | Pre-filtering query | - | `{"term": {...}}` |
+| Parameter | Type | Required | Description | Default | Range | Example |
+|-----------|------|----------|-------------|---------|---------|---------|
+| `k` | Integer | Yes | Number of results to return | - | $>0$ | `10` |
+| `model_id` | String | Yes** | Sparse encoding model ID | - | - | `"abc123def456"` |
+| `query_text` | String | No* | Text to encode and search | - | - | `"machine learning"` |
+| `query_tokens` | Object | No* | Pre-encoded token map | - | - | `{"token": 0.8}` |
+| `top_n` | Integer | No | Query token pruning limit | `10` | $>0$ | `15` |
+| `heap_factor` | Float | No | Recall vs performance tuning | `1.0` | $>0$ | `1.5` |
+| `filter` | Object | No | Pre-filtering query | - | - | `{"term": {...}}` |
 
-*Either `query_text` or `query_tokens` is required
+*Either `query_text` or `query_tokens` is required\
 **Required when using `query_text`
 
 ## Cluster settings
@@ -185,19 +201,20 @@ PUT /_cluster/settings
 ```
 
 ### Memory and caching settings
-
+Here is an example to call the circuit breaker cluster setting API:
 ```json
-PUT /_cluster/settings
+PUT _cluster/settings
 {
   "persistent": {
-    "plugins.neural_search.seismic.cache.max_size": "2GB",
-    "plugins.neural_search.seismic.cache.ttl": "1h"
+    "plugins.neural_search.circuit_breaker.limit": "30%",
+    "plugins.neural_search.circuit_breaker.overhead": "1.01"
   }
 }
 ```
+More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/).
 
 ## Performance tuning
-
+As a kind of ANN algorithm, SEISMIC does not aim at providing exact search but providing users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings.
 ### Optimizing for recall vs speed
 
 - **Higher recall**: Increase `heap_factor` (1.5-2.0), increase `cluster_ratio` (0.15-0.2)
@@ -238,14 +255,14 @@ PUT /_cluster/settings
 **SEISMIC not activating**
 - Check that `index.sparse: true` is set
 - Verify segment size exceeds `approximate_threshold`
-- Confirm field type is `sparse_ann`
+- Confirm field type is `sparse_tokens`
 
 **High memory usage**
 - Reduce `n_postings` parameter
 - Adjust cache settings
 - Consider increasing `approximate_threshold`
 
-**Poor query performance**
+**Slow SEISMIC query performance**
 - Tune `heap_factor` and `top_n` parameters
 - Verify adequate cluster resources
 
