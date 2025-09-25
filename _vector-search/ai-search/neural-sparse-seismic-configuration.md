@@ -170,27 +170,27 @@ GET /seismic-documents/_search
 | Parameter | Type | Required | Description | Default | Range | Example |
 |-----------|------|----------|-------------|---------|---------|---------|
 | `name` | String | Yes | Algorithm name | - | - | `"seismic"` |
-| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count`* | $$(0, \infty)$$ | `4000` |
+| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count`¹ | $$(0, \infty)$$ | `4000` |
 | `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $$(0, 1)$$ | `0.15` |
 | `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $$(0, 1]$$ | `0.3` |
 | `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $$[0, \infty)$$ | `500000` |
 
-*doc count here is segment level
+¹doc count here is segment level
 
 ### Query parameters
 
 | Parameter | Type | Required | Description | Default | Range | Example |
 |-----------|------|----------|-------------|---------|---------|---------|
 | `k` | Integer | Yes | Number of results to return | - | $$>0$$ | `10` |
-| `model_id` | String | Yes** | Sparse encoding model ID | - | - | `"abc123def456"` |
-| `query_text` | String | No* | Text to encode and search | - | - | `"machine learning"` |
-| `query_tokens` | Object | No* | Pre-encoded token map | - | - | `{"token": 0.8}` |
+| `model_id` | String | Yes² | Sparse encoding model ID | - | - | `"abc123def456"` |
+| `query_text` | String | No¹ | Text to encode and search | - | - | `"machine learning"` |
+| `query_tokens` | Object | No¹ | Pre-encoded token map | - | - | `{"token": 0.8}` |
 | `top_n` | Integer | No | Query token pruning limit | `10` | $$>0$$ | `15` |
 | `heap_factor` | Float | No | Recall vs performance tuning | `1.0` | $$>0$$ | `1.5` |
 | `filter` | Object | No | Pre-filtering query | - | - | `{"term": {...}}` |
 
-*Either `query_text` or `query_tokens` is required\
-**Required when using `query_text`
+¹Either `query_text` or `query_tokens` is required\
+²Required when using `query_text`
 
 ## Cluster settings
 
@@ -237,7 +237,6 @@ As a kind of ANN algorithm, SEISMIC provides users with an opportunity to balanc
 ### Indexing performance
 
 - Adjust `plugins.neural_search.sparse.algo_param.index_thread_qty` based on CPU cores
-- Use fewer shards for better clustering efficiency
 - Consider [batch]({{site.url}}{{site.baseurl}}/ml-commons-plugin/remote-models/batch-ingestion/) size in ingest pipelines
 
 ## Limitations and considerations
