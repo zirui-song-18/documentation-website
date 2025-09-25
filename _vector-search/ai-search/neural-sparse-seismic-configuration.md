@@ -19,7 +19,7 @@ SEISMIC is an **A**pproximate **N**earest **N**eighbor (ANN) algorithm designed 
 Before configuring SEISMIC, ensure you have:
 
 - OpenSearch 2.11 or later with the neural-search plugin installed
-- Sufficient cluster resources (CPU & JVM memory) for SEISMIC index building and caching
+- Sufficient cluster resources (CPU cores & JVM memory) for SEISMIC index building and caching
 
 ## Index configuration
 
@@ -142,11 +142,15 @@ GET /seismic-documents/_search
 {
   "query": {
     "neural_sparse": {
-      "content_vector": {
-        "query_tokens": [123: 0.1234, 345: 0.3456, 567: 0.5678],
-        "k": 10,
-        "top_n": 10,
-        "heap_factor": 1.0
+      "sparse_embedding": {
+        "query_tokens": {
+          "1055": 20
+        },
+        "method_parameters": {
+          "heap_factor": 1.2,
+          "top_n": 6,
+          "k": 10
+        }
       }
     }
   }
@@ -166,10 +170,12 @@ GET /seismic-documents/_search
 | Parameter | Type | Required | Description | Default | Range | Example |
 |-----------|------|----------|-------------|---------|---------|---------|
 | `name` | String | Yes | Algorithm name | - | - | `"seismic"` |
-| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count` | $$> 0$$ | `4000` |
-| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $$(0,1)$$ | `0.15` |
-| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $$(0,1]$$ | `0.3` |
-| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $$\geq0$$ | `500000` |
+| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count`* | $$(0, \infty)$$ | `4000` |
+| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $$(0, 1)$$ | `0.15` |
+| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $$(0, 1]$$ | `0.3` |
+| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $$[0, \infty)$$ | `500000` |
+
+*doc count here is segment level\
 
 ### Query parameters
 
@@ -190,13 +196,13 @@ GET /seismic-documents/_search
 
 ### Thread pool configuration
 
-If your hardware has multiple available cores, you can allow multiple threads when building the clustered inverted index. Determine the number of threads by tuning the `sparse.algo_param.index_thread_qty` setting
+If your hardware has multiple available cores, you can allow multiple threads when building the clustered inverted index. When you have more than one thread working, the clustering work of every posting list will be distributed to available threads, which accelerate the clustering process. Determine the number of threads by tuning the `plugins.neural_search.sparse.algo_param.index_thread_qty` setting
 
 ```json
 PUT /_cluster/settings
 {
   "persistent": {
-    "sparse.algo_param.index_thread_qty": 4
+    "plugins.neural_search.sparse.algo_param.index_thread_qty": 4
   }
 }
 ```
@@ -215,11 +221,11 @@ PUT _cluster/settings
 More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/).
 
 ## Performance tuning
-As a kind of ANN algorithm, SEISMIC does not aim at providing exact search but providing users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings.
+As a kind of ANN algorithm, SEISMIC provides users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings.
 ### Optimizing for recall vs speed
 
-- **Higher recall**: Increase `heap_factor` (1.5-2.0), increase `cluster_ratio` (0.15-0.2)
-- **Higher speed**: Decrease `heap_factor` (0.5-0.8), decrease `n_postings` (2000-3000)
+- **Higher recall**: Increase `heap_factor`, increase `cluster_ratio` 
+- **Higher speed**: Decrease `heap_factor`, decrease `n_postings`
 - **Balanced**: Use default values and adjust based on benchmarking
 
 ### Memory optimization
@@ -230,15 +236,16 @@ As a kind of ANN algorithm, SEISMIC does not aim at providing exact search but p
 
 ### Indexing performance
 
-- Adjust `sparse.algo_param.index_thread_qty` based on CPU cores
+- Adjust `plugins.neural_search.sparse.algo_param.index_thread_qty` based on CPU cores
 - Use fewer shards for better clustering efficiency
-- Consider batch size in ingest pipelines
+- Consider [batch]({{site.url}}{{site.baseurl}}/ml-commons-plugin/remote-models/batch-ingestion/) size in ingest pipelines
 
 ## Limitations and considerations
 
 ### Current limitations
 
 - **Codec restriction**: Indices with `index.sparse: true` cannot use k-NN dense vector fields
+- **Not support two-phase**: Currently SEISMIC does not support hybrid search with two-phase pipeline
 - **Memory requirements**: SEISMIC requires additional memory for forward index and cluster caching
 - **Indexing overhead**: Clustering process adds computational cost during indexing
 
@@ -265,7 +272,7 @@ As a kind of ANN algorithm, SEISMIC does not aim at providing exact search but p
 
 **Slow SEISMIC query performance**
 - Tune `heap_factor` and `top_n` parameters
-- Verify adequate cluster resources
+- Check `approximate_threshold` and [`_cat/segments`]({{site.url}}{{site.baseurl}}/api-reference/cat/index/) API.
 
 **Indexing failures**
 - Monitor thread pool settings

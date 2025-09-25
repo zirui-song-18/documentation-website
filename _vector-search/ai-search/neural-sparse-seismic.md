@@ -50,12 +50,11 @@ This approach dramatically reduces the number of documents that need to be score
 
 SEISMIC offers several advantages over traditional neural sparse search approaches:
 
-- **Significant performance improvement**: Achieves at least 3x query speed improvement compared to two-phase queries under ≥90% recall conditions
-- **Scalability**: Maintains consistent query performance even as datasets scale to billions of vectors
-- **Memory efficiency**: Uses optimized caching strategies and optional quantization to manage memory usage
-- **Backward compatibility**: Seamlessly integrates with existing neural sparse search infrastructure
+- **Significant performance improvement**: Achieves astonishing query speed improvement compared to two-phase queries under ≥90% recall conditions
+- **Scalability**: Maintains consistent query performance even as datasets scale to 50 Million vectors in a single node
+- **Memory efficiency**: Uses optimized caching strategies and quantization to manage memory usage
 - **Hybrid approach**: Automatically selects the optimal indexing strategy based on segment size
-- **High searsch flexibility**: Users can smoothly tune the trade-off between high recall and low latency with the help of cut & heap_factor these two parameters.
+- **High searsch flexibility**: Users can smoothly tune the trade-off between high recall and low latency with the help of cut & heap_factor these two parameters
 
 ## Configuration parameters
 
@@ -86,8 +85,9 @@ SEISMIC is designed to excel in large-scale scenarios:
 - **Query performance**: 3x+ improvement over two-phase queries with ≥90% recall
 - **Memory usage**: Configurable caching strategies with circuit breakers to prevent resource exhaustion
 - **Indexing overhead**: Minimal impact on indexing performance through hybrid approach
-- **Scalability**: Linear performance scaling with dataset size## Fi
-ltering support
+- **Scalability**: Linear performance scaling with dataset size
+
+## Filtering support
 
 SEISMIC supports both pre-filtering and post-filtering approaches:
 
@@ -104,7 +104,6 @@ SEISMIC implements sophisticated memory management strategies:
 - **Flexible caching**: Configurable strategies allowing users to balance query performance against memory usage
 - **Circuit breakers**: Prevent memory exhaustion and service degradation
 - **Quantization support**: Multiple quantization levels to reduce memory footprint
-- **Cache key management**: Uses IndexKey (combination of SegmentInfo and field name) for unique identification
 
 ## When to use SEISMIC
 
@@ -119,7 +118,7 @@ Consider SEISMIC when you need the efficiency of sparse retrieval but require be
 
 ## Limitations
 
-- **Index compatibility**: Currently, indices can only use either sparse ANN fields or k-NN fields, not both (limitation may be addressed in future versions)
+- **Index compatibility**: Currently, indices can only use either Sparse ANN or k-NN, not both (limitation may be addressed in future versions)
 - **Memory requirements**: While optimized, SEISMIC still requires significant memory for forward index and clustered posting lists
 - **Complexity**: Additional configuration parameters require tuning for optimal performance
 

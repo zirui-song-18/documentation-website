@@ -134,10 +134,10 @@ When testing parameter changes:
 - Inconsistent search quality across queries
 
 **Solutions:**
-1. Increase `heap_factor` to 1.2-1.5
-2. Increase `top_n` to 12-15
-3. Decrease `summary_prune_ratio` to 0.3-0.35
-4. Increase `n_postings` to 3500-4000
+1. Increase `heap_factor`
+2. Increase `top_n`
+3. Increase `summary_prune_ratio`
+4. Increase `n_postings`
 
 ### High latency symptoms and solutions
 
@@ -146,10 +146,10 @@ When testing parameter changes:
 - Timeout errors during peak traffic
 
 **Solutions:**
-1. Decrease `heap_factor` to 0.7-0.9
-2. Decrease `top_n` to 8-10
-3. Decrease `n_postings` to 2000-2500
-4. Increase `summary_prune_ratio` to 0.45-0.5
+1. Decrease `heap_factor`
+2. Decrease `top_n`
+3. Decrease `n_postings`
+4. Decrease `summary_prune_ratio`
 
 ### Memory pressure symptoms and solutions
 
@@ -160,8 +160,8 @@ When testing parameter changes:
 
 **Solutions:**
 1. Decrease `n_postings` significantly
-2. Increase `summary_prune_ratio` to 0.5+
-3. Decrease `cluster_ratio` to 0.08 or lower
+2. Decrease `summary_prune_ratio`
+3. Decrease `cluster_ratio`
 4. Increase `approximate_threshold` to delay activation
 
 
