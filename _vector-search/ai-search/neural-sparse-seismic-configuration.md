@@ -1,6 +1,6 @@
 ---
 layout: default
-title: SEISMIC configuration
+title: Sparse ANN configuration
 parent: SEISMIC algorithm
 grand_parent: Neural sparse search
 great_grand_parent: AI search
@@ -8,9 +8,9 @@ nav_order: 10
 has_math: true
 ---
 
-# SEISMIC configuration
+# Sparse ANN configuration
 
-This page provides comprehensive configuration guidance for the SEISMIC algorithm in OpenSearch neural sparse search.
+This page provides comprehensive configuration guidance for Sparse ANN, especially the SEISMIC algorithm, in OpenSearch neural sparse search.
 
 SEISMIC is an **A**pproximate **N**earest **N**eighbor (ANN) algorithm designed to accelerate neural sparse vector queries by organizing documents into clusters with summary vectors, enabling efficient pruning during search operations. Unlike traditional neural sparse search that relies solely on inverted indexes, SEISMIC maintains both a forward index of sparse vectors and clustered posting lists to achieve significant query performance improvements.
 

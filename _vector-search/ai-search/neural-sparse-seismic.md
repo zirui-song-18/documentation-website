@@ -1,6 +1,6 @@
 ---
 layout: default
-title: SEISMIC algorithm
+title: Sparse ANN
 parent: Neural sparse search
 grand_parent: AI search
 nav_order: 60
@@ -9,15 +9,15 @@ redirect_from:
   - /search-plugins/neural-sparse-seismic/
 ---
 
-# SEISMIC algorithm
+# Sparse Approximate Search
 Introduced 3.3.0
 {: .label .label-purple }
 
-SEISMIC (**S**pilled Clust**e**ring of **I**nverted Lists with **S**ummaries for **M**aximum **I**nner Produ**c**t Search from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is an **A**pproximate **N**earest **N**eighbor (ANN) algorithm specifically designed to accelerate neural sparse search. Unlike traditional sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors. Now, Seismic algorithm is available in the Neural-Search plugin to provide outstanding sparse vector query performance.
+**A**pproximate **N**earest **N**eighbor (ANN) algorithm gets more and more popular in recent days with its fast query performance and flexibility of tuning the trade-off between accuracy and latency. Among so many kinds of ANN algorithms, SEISMIC (**S**pilled Clust**e**ring of **I**nverted Lists with **S**ummaries for **M**aximum **I**nner Produ**c**t Search from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is specifically designed to accelerate neural sparse search. Unlike traditional sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors. Now, approximate sparse search is available with SEISMIC algorithm in the Neural-Search plugin to provide outstanding sparse vector query performance.
 
 SEISMIC addresses the performance challenges that arise when neural sparse search is applied to large-scale datasets with billions of vectors. While neural sparse search traditionally uses inverted indexes for efficiency, query performance can deteriorate substantially at unprecedented data volumes. SEISMIC introduces a novel approach using clustered posting lists and approximate retrieval techniques to maintain fast query speeds even as data scales exponentially.
 
-## How SEISMIC works
+## How Sparse ANN (SEISMIC) works
 
 SEISMIC operates through a sophisticated two-stage process that optimizes both indexing and querying of neural sparse vectors:
 
@@ -132,12 +132,12 @@ To implement SEISMIC in your OpenSearch cluster:
 3. **Tune parameters**: Adjust clustering and query parameters based on your dataset characteristics
 4. **Monitor performance**: Use OpenSearch monitoring tools to track query performance and memory usage
 
-For detailed setup instructions, see [SEISMIC configuration]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/).
+For detailed setup instructions, see [Sparse ANN configuration]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/).
 
 ## Next steps
 
-- [Configure SEISMIC]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/) for detailed setup instructions
-- [Explore SEISMIC examples]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-examples/) for practical implementation guidance
+- [Configure Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/) for detailed setup instructions
+- [Explore Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/) for practical implementation guidance
 - Learn about [neural sparse search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-search/) fundamentals
 - Discover [hybrid search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/hybrid-search/) techniques
 
