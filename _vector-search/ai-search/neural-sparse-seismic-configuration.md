@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Sparse ANN configuration
-parent: SEISMIC algorithm
+parent: Sparse ANN
 grand_parent: Neural sparse search
 great_grand_parent: AI search
 nav_order: 10
@@ -166,21 +166,21 @@ GET /seismic-documents/_search
 | Parameter | Type | Required | Description | Default | Range | Example |
 |-----------|------|----------|-------------|---------|---------|---------|
 | `name` | String | Yes | Algorithm name | - | - | `"seismic"` |
-| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count` | $> 0$ | `4000` |
-| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $(0,1)$ | `0.15` |
-| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $(0,1]$ | `0.3` |
-| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $\geq0$ | `500000` |
+| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count` | $$> 0$$ | `4000` |
+| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $$(0,1)$$ | `0.15` |
+| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $$(0,1]$$ | `0.3` |
+| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $$\geq0$$ | `500000` |
 
 ### Query parameters
 
 | Parameter | Type | Required | Description | Default | Range | Example |
 |-----------|------|----------|-------------|---------|---------|---------|
-| `k` | Integer | Yes | Number of results to return | - | $>0$ | `10` |
+| `k` | Integer | Yes | Number of results to return | - | $$>0$$ | `10` |
 | `model_id` | String | Yes** | Sparse encoding model ID | - | - | `"abc123def456"` |
 | `query_text` | String | No* | Text to encode and search | - | - | `"machine learning"` |
 | `query_tokens` | Object | No* | Pre-encoded token map | - | - | `{"token": 0.8}` |
-| `top_n` | Integer | No | Query token pruning limit | `10` | $>0$ | `15` |
-| `heap_factor` | Float | No | Recall vs performance tuning | `1.0` | $>0$ | `1.5` |
+| `top_n` | Integer | No | Query token pruning limit | `10` | $$>0$$ | `15` |
+| `heap_factor` | Float | No | Recall vs performance tuning | `1.0` | $$>0$$ | `1.5` |
 | `filter` | Object | No | Pre-filtering query | - | - | `{"term": {...}}` |
 
 *Either `query_text` or `query_tokens` is required\
@@ -275,6 +275,5 @@ As a kind of ANN algorithm, SEISMIC does not aim at providing exact search but p
 
 ## Next steps
 
-- [SEISMIC examples and tutorials]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-examples/)
-- [Neural sparse search performance benchmarks]({{site.url}}{{site.baseurl}}/benchmarks/neural-sparse/)
+- [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
 - [Hybrid search with SEISMIC]({{site.url}}{{site.baseurl}}/search-plugins/hybrid-search/)

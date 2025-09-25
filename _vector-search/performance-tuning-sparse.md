@@ -20,11 +20,11 @@ These parameters affect index construction and memory usage:
 
 - **`n_postings`**: Maximum documents per posting list (λ parameter)
 
-If a small `n_postings` is set, more aggresive pruning will be applied to the inverted index, which means that fewer document identifiers are kept in one posting list. Reducing this parameter will accelerate index building time and query time but reduce query recall. If you do not specify this parameter, SEISMIC algorithm will decide this value based on $0.0005 \times \text{document count}$
+If a small `n_postings` is set, more aggresive pruning will be applied to the inverted index, which means that fewer document identifiers are kept in one posting list. Reducing this parameter will accelerate index building time and query time but reduce query recall. If you do not specify this parameter, SEISMIC algorithm will decide this value based on $$0.0005 \times \text{document count}$$
 
 - **`cluster_ratio`**: Ratio to determine cluster count
 
-After pruning, there will be `cluster_ratio` $*$ `document_count` in each posting list. A higher `cluster_ratio` will lead to more clusters, higher query recall, longer index builing time, and larger query latency.
+After pruning, there will be `cluster_ratio` $$*$$ `document_count` in each posting list. A higher `cluster_ratio` will lead to more clusters, higher query recall, longer index builing time, and larger query latency.
 
 - **`summary_prune_ratio`**: Ratio for pruning summary vectors (α parameter)
 
@@ -51,7 +51,7 @@ Every time when SEISMIC determines whether to examine a cluster, it compares pot
 ### Optimizing for high recall
 Taking 8.8M MS MARCO dataset as an example, recommended values are shown in parentheses.
 
-- Higher `n_postings (6000): Allows more documents per cluster, reducing information loss
+- Higher `n_postings` (6000): Allows more documents per cluster, reducing information loss
 - Higher `cluster_ratio` (0.15): Creates more clusters, providing finer granularity
 - Higher `summary_prune_ratio` (0.5): Retains more information in summary vectors
 - Higher `top_n` (5): Considers more query tokens during search
@@ -164,35 +164,8 @@ When testing parameter changes:
 3. Decrease `cluster_ratio` to 0.08 or lower
 4. Increase `approximate_threshold` to delay activation
 
-## Advanced tuning techniques
-
-### Dataset-specific optimizations
-
-**High-dimensional sparse vectors (>10k dimensions):**
-- Use higher `summary_prune_ratio` (0.5-0.6)
-- Increase `cluster_ratio` (0.12-0.15)
-- Monitor memory usage carefully
-
-**Low-dimensional sparse vectors (<1k dimensions):**
-- Use lower `summary_prune_ratio` (0.3-0.4)
-- Can use higher `n_postings` (4000-5000)
-- Focus on recall optimization
-
-**Highly sparse vectors (>95% zeros):**
-- Increase `top_n` (15-20)
-- Use moderate `heap_factor` (1.0-1.2)
-- Consider lower `cluster_ratio` (0.08-0.10)
-
-### Multi-field optimization
-
-When using multiple sparse fields, consider:
-
-- Different parameter sets per field based on usage patterns
-- Memory allocation across fields
-- Query routing strategies for optimal performance
 
 ## Next steps
 
-- [SEISMIC configuration reference]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/)
-- [Neural sparse search benchmarks]({{site.url}}{{site.baseurl}}/benchmarks/neural-sparse/)
+- [Sparse ANN configuration reference]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/)
 - [Vector search performance monitoring]({{site.url}}{{site.baseurl}}/monitoring-your-cluster/pa/)
