@@ -15,7 +15,7 @@ Introduced 3.3.0
 
 **A**pproximate **N**earest **N**eighbor (ANN) algorithm gets more and more popular in recent days with its fast query performance and flexibility of tuning the trade-off between accuracy and latency. Among so many kinds of ANN algorithms, SEISMIC (**S**pilled Clust**e**ring of **I**nverted Lists with **S**ummaries for **M**aximum **I**nner Produ**c**t Search from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is specifically designed to accelerate neural sparse search. Unlike traditional sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors. Now, approximate sparse search is available with SEISMIC algorithm in the Neural-Search plugin to provide outstanding sparse vector query performance.
 
-SEISMIC addresses the performance challenges that arise when neural sparse search is applied to large-scale datasets with billions of vectors. While neural sparse search traditionally uses inverted indexes for efficiency, query performance can deteriorate substantially at unprecedented data volumes. SEISMIC introduces a novel approach using clustered posting lists and approximate retrieval techniques to maintain fast query speeds even as data scales exponentially.
+SEISMIC addresses the performance challenges that arise when neural sparse search is applied to large-scale datasets with billions of vectors. While neural sparse search traditionally uses inverted indexes for efficiency, query performance can drop substantially in a linear relationship with the document size. SEISMIC introduces a novel approach using clustered posting lists and approximate retrieval techniques to maintain fast query speeds even as data scales exponentially.
 
 ## How Sparse ANN (SEISMIC) works
 
@@ -41,9 +41,11 @@ During the indexing phase, SEISMIC implements several key optimizations:
 
 During query execution, SEISMIC employs an efficient retrieval process:
 
-1. **Cluster-level filtering**: The algorithm first computes dot product scores between the query vector and cluster summary vectors. Only clusters with scores above a dynamic threshold are selected for detailed examination.
+1. **Token-level pruning**: Once a query is given to SEISMIC algorithm, its all tokens will be pruned based on their weights. Only `top_n` tokens with highest weight will be kept, so that fewer posting lists will be visited.
 
-2. **Document-level scoring**: For selected clusters, SEISMIC examines individual documents within those clusters, computing exact dot product scores between the query and document vectors retrieved from the forward index.
+2. **Cluster-level filtering**: The algorithm first computes dot product scores between the query vector and cluster summary vectors. Only clusters with scores above a dynamic threshold are selected for detailed examination.
+
+3. **Document-level scoring**: For selected clusters, SEISMIC examines individual documents within those clusters, computing exact dot product scores between the query and document vectors retrieved from the forward index.
 
 This approach dramatically reduces the number of documents that need to be scored, resulting in significant performance improvements while maintaining high recall accuracy.
 # Key benefits
@@ -85,11 +87,11 @@ SEISMIC is designed to excel in large-scale scenarios:
 - **Query performance**: 3x+ improvement over two-phase queries with ≥90% recall
 - **Memory usage**: Configurable caching strategies with circuit breakers to prevent resource exhaustion
 - **Indexing overhead**: Minimal impact on indexing performance through hybrid approach
-- **Scalability**: Linear performance scaling with dataset size
+- **Scalability**: Better than linear performance scaling with dataset size
 
 ## Filtering support
 
-SEISMIC supports both pre-filtering and post-filtering approaches:
+SEISMIC supports both pre-filtering and post-filtering approaches. See [Filtering in Sparse Search]({{site.url}}{{site.baseurl}}/vector-search/filter-search-knn/sparse-filter/).
 
 ### Post-filtering
 Users can combine SEISMIC queries with boolean filters in compound queries. The algorithm first finds the top K nearest documents, then applies filters to produce final results.

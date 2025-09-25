@@ -12,7 +12,7 @@ This page provides comprehensive performance tuning guidance for the Sparse ANN 
 
 ## Understanding SEISMIC parameters
 
-A good thing of SEISMIC is that it supports real-time trade-off controlling when users conduct a query. This means that users do not have to re-index if they want to change the balance between search accuracy and query performance. SEISMIC achieves this by six key parameters that affect different aspects of the algorithm:
+A good thing of SEISMIC is that it supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to re-index if they want to change the balance between search accuracy and query performance. In total, SEISMIC employs six key parameters that affect different aspects of the algorithm:
 
 ### Index parameters
 
@@ -32,7 +32,7 @@ This parameter controls how many tokens will be kept in `summary` of each cluste
 
 - **`approximate_threshold`**: Document threshold for SEISMIC activation
 
-This parameter will control whether to activate SEISMIC algorithm within each segment. When you have more documents in total, the number of documents in one segment will tends to increase. At this time, you might want to increase this threshold to prevent repeating cluster building when small segments merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those small segments will fall back to rank features mode.
+This parameter will control whether to activate SEISMIC algorithm within each segment. When you have more documents in total, the number of documents in one segment will tend to increase. At this time, you might want to increase this threshold to prevent repeating cluster building when small segments merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those small segments will fall back to rank features mode.
 
 ### Query parameters
 
@@ -45,30 +45,6 @@ In SEISMIC algorithm, a query's all tokens will be pruned to only keep `top_n` o
 - **`heap_factor`**: Recall vs performance tuning multiplier
 
 Every time when SEISMIC determines whether to examine a cluster, it compares potential cluster's score with current queue top's score dividing by `heap_factor`. Larger `heap_factor` will push SEISMIC algorithm to examine more clusters, resulting in higher accuracy but slower query speed. This parameter is more fine-grained compared with `top_n`, which help you to slightly tune the trade-off between accuracy and latency.
-
-## Performance tuning strategies
-
-### Optimizing for high recall
-Taking 8.8M MS MARCO dataset as an example, recommended values are shown in parentheses.
-
-- Higher `n_postings` (6000): Allows more documents per cluster, reducing information loss
-- Higher `cluster_ratio` (0.15): Creates more clusters, providing finer granularity
-- Higher `summary_prune_ratio` (0.5): Retains more information in summary vectors
-- Higher `top_n` (5): Considers more query tokens during search
-- Higher `heap_factor` (1.2): Explores more candidates during search
-
-### Optimizing for low latency
-Taking 8.8M MS MARCO dataset as an example, recommended values are shown in parentheses.
-
-- Lower `n_postings` (3000): Smaller posting lists mean faster traversal
-- Lower `cluster_ratio` (0.08): Fewer clusters reduce computational overhead
-- Lower `summary_prune_ratio` (0.3): More aggressive pruning reduces memory usage
-- Lower `top_n` (3): Processes fewer query tokens
-- Lower `heap_factor` (0.9): Explores fewer candidates, reducing computation
-
-
-
-
 
 ## Optimize beyond parameters
 
@@ -95,35 +71,6 @@ PUT /_cluster/settings
 ```
 More details can be seen in [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/vector-search/ai-search/needs-to-be-implemented/).
 
-## Performance benchmarking
-
-### Establish baseline metrics
-
-Before tuning, measure your baseline performance:
-
-1. **Recall metrics**: Use a ground truth dataset to measure recall@k
-2. **Latency metrics**: Measure p50, p95, and p99 query latencies
-3. **Memory usage**: Monitor JVM heap and off-heap memory usage
-4. **Indexing performance**: Measure indexing throughput and time
-
-### Iterative tuning process
-
-Follow this systematic approach:
-
-1. **Start with balanced configuration**
-2. **Identify primary bottleneck** (recall vs latency vs memory)
-3. **Adjust one parameter at a time**
-4. **Measure impact on all metrics**
-5. **Iterate until acceptable trade-offs are achieved**
-
-### A/B testing recommendations
-
-When testing parameter changes:
-
-- Use representative query workloads
-- Test with production-like data volumes
-- Measure performance over extended periods
-- Consider query pattern variations (peak vs off-peak)
 
 ## Troubleshooting performance issues
 
@@ -162,7 +109,7 @@ When testing parameter changes:
 1. Decrease `n_postings` significantly
 2. Decrease `summary_prune_ratio`
 3. Decrease `cluster_ratio`
-4. Increase `approximate_threshold` to delay activation
+4. Increase `approximate_threshold` to delay SEISMIC activation
 
 
 ## Next steps

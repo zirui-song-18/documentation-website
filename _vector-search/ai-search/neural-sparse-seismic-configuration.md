@@ -175,7 +175,7 @@ GET /seismic-documents/_search
 | `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $$(0, 1]$$ | `0.3` |
 | `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $$[0, \infty)$$ | `500000` |
 
-*doc count here is segment level\
+*doc count here is segment level
 
 ### Query parameters
 
