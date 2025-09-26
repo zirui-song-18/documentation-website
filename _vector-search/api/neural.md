@@ -453,6 +453,20 @@ POST /_plugins/_neural/warmup/index1,index2,index3?pretty
 
 The `total` value indicates the number of shards that the neural plugin attempted to warm up. The response also includes the number of shards that the plugin successfully warmed up and failed to warm up.
 
+The neural search warmup API can be used with index patterns to clear one or more indexes that match the given pattern from the cache, as shown in the following example:
+
+```json
+POST /_plugins/_neural/warm_up/index*?pretty
+{
+  "_shards" : {
+    "total" : 6,
+    "successful" : 6,
+    "failed" : 0
+  }
+}
+```
+{% include copy-curl.html %}
+
 The call does not return results until the warmup operation finishes or the request times out. If the request times out, then the operation continues on the cluster. To monitor the warmup operation, use the OpenSearch `_tasks` API:
 
 ```json
@@ -499,6 +513,20 @@ POST /_plugins/_neural/clear_cache/index1,index2,index3?pretty
 {% include copy-curl.html %}
 
 The `total` parameter indicates the number of shards that the API attempted to clear from the cache. The response includes both the number of cleared shards and the number of shards that the plugin failed to clear.
+
+The neural search clear cache API can be used with index patterns to clear one or more indexes that match the given pattern from the cache, as shown in the following example:
+
+```json
+POST /_plugins/_neural/clear_cache/index*?pretty
+{
+  "_shards" : {
+    "total" : 6,
+    "successful" : 6,
+    "failed" : 0
+  }
+}
+```
+{% include copy-curl.html %}
 
 The API call does not return results until the operation finishes or the request times out. If the request times out, then the operation continues on the cluster. To monitor the clear cache request, use the `_tasks` API, as shown in the following example:
 
