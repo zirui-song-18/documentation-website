@@ -1,21 +1,20 @@
 ---
 layout: default
-title: Rank field types
+title: Sparse-Vector field type
 nav_order: 60
 has_children: false
 parent: Supported field types
 redirect_from:
   - /opensearch/supported-field-types/rank/
-  - /field-types/rank/
 ---
 
 # Sparse-Vector field type
-**Introduced 1.0**
+**Introduced 3.3**
 {: .label .label-purple }
 
 Users can index and search with a sparse index. The sparse-vector field supports the approximate search algorithm SEISMIC to boost search efficiency.
 
-For more information, see [Sparse Approximate Search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic.md).
+For more information, see [Sparse ANN Search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic.md).
 
 ## Sparse-Vector
 
@@ -90,9 +89,6 @@ PUT sparse-vector-index/_doc/3
 }
 ```
 {% include copy-curl.html %}
-
-For hyper-parameter configuration, you can refer to [`Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration.md)  
-{: .note }
 
 ## Neural Sparse query
 

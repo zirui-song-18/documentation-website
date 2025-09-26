@@ -369,11 +369,6 @@ The following table lists the available statistics. For statistics with paths pr
 **Node-level statistics: Memory**
 
 
-                        "sparse_memory_usage_percentage": 0,
-                        "sparse_memory_usage": 0.13,
-                        "clustered_posting_usage": 0.06,
-                        "forward_index_usage": 0.06
-
 | Statistic name | Category             | Statistic path within category                                  | Description                                                                                           |
 | :--- |:---------------------|:----------------------------------------------------------------|:------------------------------------------------------------------------------------------------------|
 | `sparse_memory_usage_percentage` | `nodes`              | `memory.sparse.sparse_memory_usage_percentage`                  | The amount of JVM heap memory Seismic is using on the node as a percentage of the maximum JVM memory. |
