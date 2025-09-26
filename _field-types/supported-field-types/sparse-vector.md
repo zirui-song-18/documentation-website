@@ -93,7 +93,7 @@ PUT sparse-vector-index/_doc/3
 Using a neural-sparse query, you can query the sparse index either by raw vectors or query_text
 
 ```json
-GET /sparse-vector-index/_search
+GET sparse-vector-index/_search
 {
   "query": {
     "neural_sparse": {
@@ -114,7 +114,7 @@ GET /sparse-vector-index/_search
 {% include copy-curl.html %}
 
 ```json
-GET /seismic-documents/_search
+GET sparse-vector-index/_search
 {
   "query": {
     "neural_sparse": {
