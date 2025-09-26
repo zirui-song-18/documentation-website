@@ -460,7 +460,13 @@ POST /_plugins/_neural/seismic/warmup/index1,index2,index3?pretty
 
 The `total` value indicates the number of shards that the neural plugin attempted to warm up. The response also includes the number of shards that the plugin successfully warmed up and failed to warm up.
 
-The call does not return results until the warmup operation finishes or the request times out. If the request times out, then the operation continues on the cluster.
+The call does not return results until the warmup operation finishes or the request times out. If the request times out, then the operation continues on the cluster. To monitor the warmup operation, use the OpenSearch `_tasks` API:
+
+```json
+GET /_tasks
+```
+{% include copy-curl.html %}
+
 
 After the operation has finished, use the [neural `_stats` API operation](#stats) to see the updated memory usage.
 
@@ -502,6 +508,11 @@ POST /_plugins/_neural/seismic/clear_cache/index1,index2,index3?pretty
 
 The `total` parameter indicates the number of shards that the API attempted to clear from the cache. The response includes both the number of cleared shards and the number of shards that the plugin failed to clear.
 
-The API call does not return results until the operation finishes or the request times out. If the request times out, then the operation continues on the cluster.
+The API call does not return results until the operation finishes or the request times out. If the request times out, then the operation continues on the cluster. To monitor the clear cache request, use the `_tasks` API, as shown in the following example:
+
+```json
+GET /_tasks
+```
+{% include copy-curl.html %}
 
 After the operation has finished, use the [neural `_stats` API operation](#stats) to see the updated memory usage.
