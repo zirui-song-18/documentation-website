@@ -200,7 +200,7 @@ The response returns the three hotels that are nearest to the search point and h
 ```
 
 ## Post-filtering
-You can achieve post-filtering with a [Boolean filter](#boolean-filter-with-sparse-ann-search).
+You can achieve post-filtering with a [Boolean filter](#boolean-filter-with-sparse-ann-search). One thing to note is that since the filtering is applied on the results of the sparse ANN's top k results, the final results could be significantly fewer than k.
 
 ### Boolean filter with sparse ANN search
 A Boolean filter consists of a Boolean query that contains a sparse ANN query and a filter. For example, the following query searches for hotels which names match "beach resort" and then filters the results to return hotels with a rating between 8 and 10, inclusive, that provide parking:
