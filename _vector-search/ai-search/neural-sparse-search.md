@@ -62,8 +62,8 @@ For information about `two_phase_search_pipeline`, see [Neural sparse query two-
 
 For information about splitting large documents into smaller passages before generating embeddings, see [Text chunking]({{site.url}}{{site.baseurl}}/vector-search/ingesting-data/text-chunking/).
 
-## Approximate Sparse Query
-Starting from OpenSearch version 3.3, you can run an approximate sparse query algorithm call SEISMIC to achieve even better query performance with high query recall (>0.9), see [SEISMIC]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic/)
+## Sparse ANN Query
+Starting from OpenSearch version 3.3, you can run a sparse ANN query to achieve better query performance with high query recall (>0.9), see [Sparse Approximate Search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic/)
 
 ## Further reading
 

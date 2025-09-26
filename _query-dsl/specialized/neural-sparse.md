@@ -46,11 +46,11 @@ You can run the query in the following ways:
 
   For more information, see [Generating sparse vector embeddings automatically]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-with-pipelines/).
 
-## Approximate neural sparse query
+## Sparse ANN query
 Introduced 3.3
 {: .label .label-purple }
 
-You can also run an approximate neural sparse vector query against a `sparse_vector` field using [SEISMIC algorithm]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic/). It supports above mentioned querying with text or querying with tokens.
+You can also run a sparse ANN query against a `sparse_vector` field. It supports above mentioned querying with text or querying with tokens.
     ```json
     "neural_sparse": {
       "<vector_field>": {
@@ -78,7 +78,7 @@ Field | Data type | Required/Optional | Description
 `max_token_score` | Float | Optional | (Deprecated) This parameter has been deprecated since OpenSearch 2.12. It is maintained only for backward compatibility and no longer affects functionality. The parameter can still be provided in requests, but its value has no impact. Previously used as the theoretical upper bound of the score for all tokens in the vocabulary.
 `method_parameters.top_n` | Integer | Optional | Specifies the number of query tokens with the highest weights to retain for approximate sparse queries.
 `method_parameters.heap_factor` | Float | Optional | Controls the trade-off between recall and performance. Higher values increase recall but reduce query speed; lower values decrease recall but improve query speed.
-`method_parameters.k` | Integer | Optional | Specifies the number of top nearest results to return from the approximate algorithm.
+`method_parameters.k` | Integer | Optional | Specifies the number of top k nearest results to return from the approximate algorithm.
 `method_parameters.filter` | Object | Optional | Applies filters to the query results.
 
 
@@ -162,3 +162,4 @@ GET my-nlp-index/_search
 ## Next steps
 
 - For more information about neural sparse search, see [Neural sparse search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-search/).
+- For more information about sparse ANN search, see [Sparse Approximate Search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic/)
