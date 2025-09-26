@@ -10,10 +10,10 @@ parent: Supported field types
 **Introduced 3.3**
 {: .label .label-purple }
 
-Users can index and search with a sparse index. The sparse-vector field supports the approximate search algorithm SEISMIC to boost search efficiency.
+Users can index and search with a sparse index. The sparse-vector field boosts the search efficiency for sparse vectors via approximate search algorithms.
 
-For more information, see [Sparse ANN Search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic.md).
-
+For more information, see [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic.md).
+    
 ## Sparse-Vector
 
 The sparse vector is represented like a map, where the key is a token and the value is a positive [float]({{site.url}}{{site.baseurl}}/opensearch/supported-field-types/numeric/) value indicating the token weight. 
@@ -131,6 +131,6 @@ GET /seismic-documents/_search
 ```
 {% include copy-curl.html %}
 
-For query parameter, you can refer to [`Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration.md) and [`Sparse performance tuning`]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse.md). 
+For query parameter configuration, you can refer to [`Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration.md) and [`Sparse performance tuning`]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse.md). 
 {: .note }
 

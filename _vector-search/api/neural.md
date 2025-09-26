@@ -430,7 +430,7 @@ If the plugin has not loaded the sparse data into JVM memory, then it loads them
 
 As an alternative, you can avoid this latency issue by running the neural plugin warmup API operation on the indices you want to search. This operation loads all the sparse data for all the shards (primaries and replicas) of all the indices specified in the request into JVM memory.
 
-After the process is finished, you can search against the indexes without initial latency penalties. The warmup API operation is idempotent, so if a segment's sparse data are already loaded into memory, this operation has no effect. It only loads files not currently stored in memory.
+After the process is finished, you can search against the indices without initial latency penalties. The warmup API operation is idempotent, so if a segment's sparse data are already loaded into memory, this operation has no effect. It only loads files not currently stored in memory.
 
 This API operation only works with indices created with `index.sparse` setting to be `true`.
 {: .note}
@@ -460,7 +460,6 @@ GET /_tasks
 ```
 {% include copy-curl.html %}
 
-
 After the operation has finished, use the [neural `_stats` API operation](#stats) to see the updated memory usage.
 
 ### Best practices
@@ -469,14 +468,14 @@ For the warmup operation to function properly, follow these best practices:
 
 * Do not run merge operations on indices that you want to warm up. During a merge operation, the neural plugin creates new segments, and old segments are sometimes deleted. For example, you could encounter a situation in which the warmup API operation loads sparse indices A and B into native memory but segment C is created from segments A and B being merged. Sparse indices A and B would no longer be in memory, and sparse index C would also not be in memory. In this case, the initial penalty for loading sparse index C still exists.
 
-* Confirm that all sparse indices you want to warm up can fit into native memory. For more information about the JVM memory limit, see the [neural_search.circuit_breaker.limit]({{site.url}}{{site.baseurl}}/vector-search/settings#neural-search-plugin-settings).
+* Confirm that all sparse indices you want to warm up can fit into JVM memory. For more information about the JVM memory limit, see the [neural_search.circuit_breaker.limit]({{site.url}}{{site.baseurl}}/vector-search/settings#neural-search-plugin-settings).
 
 ## Clear cache operation
 
 Introduced 3.3
 {: .label .label-purple }
 
-During approximate sparse search or warmup operations, the sparse data are loaded into JVM memory. You can evict an index from the memory by deleting it. Even if you decrease the neural search circuit breaker limit, you cannot immediately evict the cached sparse data. To solve this problem, you can use the neural search clear cache API operation, which clears a given set of indexes from the cache.
+During approximate sparse search or warmup operations, the sparse data are loaded into JVM memory. You can evict an index from the memory by deleting it. Even if you decrease the neural search circuit breaker limit, you cannot immediately evict the cached sparse data. To solve this problem, you can use the neural search clear cache API operation, which clears the in-memory sparse data of a given set of indexes from the cache.
 
 The neural search clear cache API evicts all sparse data for all shards (primaries and replicas) of all indices specified in the request. Similarly to how the [warmup operation](#warmup-operation) behaves, the neural search clear cache API is idempotent, meaning that if you try to clear the cache for an index that has already been evicted from the cache, it does not have any additional effect.
 
@@ -485,7 +484,7 @@ This API operation only works with indices created with `index.sparse` setting t
 
 #### Example request
 
-The following request evicts the native library indexes of three indexes from the cache:
+The following request evicts the sparse data of three indexes from the JVM memory:
 
 ```json
 POST /_plugins/_neural/seismic/clear_cache/index1,index2,index3?pretty
