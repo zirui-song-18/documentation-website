@@ -12,20 +12,18 @@ has_math: true
 
 This page provides comprehensive configuration guidance for Sparse ANN, especially the SEISMIC algorithm, in OpenSearch neural sparse search.
 
-SEISMIC is an **A**pproximate **N**earest **N**eighbor (ANN) algorithm designed to accelerate neural sparse vector queries by organizing documents into clusters with summary vectors, enabling efficient pruning during search operations. Unlike traditional neural sparse search that relies solely on inverted indexes, SEISMIC maintains both a forward index of sparse vectors and clustered posting lists to achieve significant query performance improvements.
-
 ## Prerequisites
 
-Before configuring SEISMIC, ensure you have:
+Before configuring Sparse ANN, ensure you have:
 
-- OpenSearch 2.11 or later with the neural-search plugin installed
-- Sufficient cluster resources (CPU cores & JVM memory) for SEISMIC index building and caching
+- OpenSearch 3.3 or later with the neural-search plugin installed
+- Sufficient cluster resources (CPU cores & JVM memory) for Sparse ANN index building and caching. See [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/).
 
-## Index configuration
+## Step 1: Index configuration
 
-### Enable SEISMIC for an index
+### Enable sparse for an index
 
-To use SEISMIC, you must enable sparse setting at the index level:
+To use Sparse ANN, you must enable sparse setting at the index level:
 
 ```json
 PUT /seismic-documents
@@ -40,16 +38,7 @@ PUT /seismic-documents
 }
 ```
 
-### Hybrid indexing behavior
-
-SEISMIC uses a hybrid approach based on segment size:
-
-- **Small segments** (below `approximate_threshold`): Use traditional rank features with existing neural sparse query logic
-- **Large segments** (at or above `approximate_threshold`): Apply SEISMIC clustering algorithm with new query logic
-
-This ensures optimal performance across different data scales while maintaining indexing efficiency for smaller datasets.
-
-## Field mapping configuration
+## Step 2: Field mapping configuration
 
 ### SEISMIC field type
 
@@ -113,11 +102,11 @@ You can configure multiple sparse ANN fields with different hyper-parameters in 
 }
 ```
 
-## Query configuration
+## Step 3: Query configuration
 
-### Basic SEISMIC query
+### Basic Sparse ANN query
 
-Query SEISMIC fields using the enhanced `neural_sparse` query:
+Query Sparse ANN fields using the enhanced `neural_sparse` query:
 
 ```json
 GET /seismic-documents/_search
@@ -135,8 +124,8 @@ GET /seismic-documents/_search
   }
 }
 ```
-### Raw Vector SEISMIC query
-In addition, you can also prepare sparse vectors in advance so that you can send a raw vector as a query. Please note that you should use int token id here instead of raw text.
+### Raw vector Sparse ANN query
+In addition, you can also prepare sparse vectors in advance so that you can send a raw vector as a query. Please note that you should use tokens with integer IDs here instead of raw text.
 ```json
 GET /seismic-documents/_search
 {
@@ -196,7 +185,7 @@ GET /seismic-documents/_search
 
 ### Thread pool configuration
 
-If your hardware has multiple available cores, you can allow multiple threads when building the clustered inverted index. When you have more than one thread working, the clustering work of every posting list will be distributed to available threads, which accelerate the clustering process. Determine the number of threads by tuning the `plugins.neural_search.sparse.algo_param.index_thread_qty` setting
+When building clustered inverted index structure, it requires intensive computations. Our algorithm uses a threadpool to building clusters in parallel. The default value of the threadpool is 1. You can adjust this `plugins.neural_search.sparse.algo_param.index_thread_qty` setting to tune the threadpool size to use more CPU cores to reduce index building time
 
 ```json
 PUT /_cluster/settings
@@ -208,7 +197,7 @@ PUT /_cluster/settings
 ```
 
 ### Memory and caching settings
-Here is an example to call the circuit breaker cluster setting API:
+Sparse ANN may consume much memory space due to its clustered posting list and forward index structure. If you worry about the SEISMIC index consuming too much memory space, you can set a circuit breaker to protect OpenSearch cluster running and other plugin services. Here is an example to call the circuit breaker cluster setting API:
 ```json
 PUT _cluster/settings
 {
@@ -221,45 +210,13 @@ PUT _cluster/settings
 More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/).
 
 ## Performance tuning
-As a kind of ANN algorithm, SEISMIC provides users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings.
-### Optimizing for recall vs speed
-
-- **Higher recall**: Increase `heap_factor`, increase `cluster_ratio` 
-- **Higher speed**: Decrease `heap_factor`, decrease `n_postings`
-- **Balanced**: Use default values and adjust based on benchmarking
-
-### Memory optimization
-
-- Reduce `n_postings` for lower memory usage
-- Increase `approximate_threshold` to delay SEISMIC activation
-- Configure appropriate cache settings based on available memory
-
-### Indexing performance
-
-- Adjust `plugins.neural_search.sparse.algo_param.index_thread_qty` based on CPU cores
-- Consider [batch]({{site.url}}{{site.baseurl}}/ml-commons-plugin/remote-models/batch-ingestion/) size in ingest pipelines
-
-## Limitations and considerations
-
-### Current limitations
-
-- **Codec restriction**: Indices with `index.sparse: true` cannot use k-NN dense vector fields
-- **Not support two-phase**: Currently SEISMIC does not support hybrid search with two-phase pipeline
-- **Memory requirements**: SEISMIC requires additional memory for forward index and cluster caching
-- **Indexing overhead**: Clustering process adds computational cost during indexing
-
-### Best practices
-
-- Start with default parameters and tune based on your specific dataset
-- Monitor memory usage and adjust cache settings accordingly
-- Use SEISMIC for large-scale datasets where query performance is critical
-- Consider the trade-off between indexing time and query performance
+Sparse ANN provides users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings. Check guidance in [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
 
 ## Troubleshooting
 
 ### Common issues
 
-**SEISMIC not activating**
+**Sparse ANN not activating**
 - Check that `index.sparse: true` is set
 - Verify segment size exceeds `approximate_threshold`
 - Confirm field type is `sparse_vector`
@@ -269,7 +226,7 @@ As a kind of ANN algorithm, SEISMIC provides users with an opportunity to balanc
 - Adjust cache settings
 - Consider increasing `approximate_threshold`
 
-**Slow SEISMIC query performance**
+**Slow Sparse ANN query performance**
 - Tune `heap_factor` and `top_n` parameters
 - Check `approximate_threshold` and [`_cat/segments`]({{site.url}}{{site.baseurl}}/api-reference/cat/index/) API.
 

@@ -8,13 +8,11 @@ has_math: true
 
 # Sparse performance tuning
 
-This page provides comprehensive performance tuning guidance for the Sparse ANN [SEISMIC]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic/) algorithm in OpenSearch neural sparse search. SEISMIC offers multiple parameters that allow you to balance the trade-off between search recall (accuracy) and query performance (latency).
+This page provides comprehensive performance tuning guidance for the [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann/) algorithm in OpenSearch neural sparse search. SEISMIC offers multiple parameters that allow you to balance the trade-off between search recall (accuracy) and query performance (latency).
 
-## Understanding SEISMIC parameters
+Our SEISMIC feature supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to re-index if they want to change the balance between search accuracy and query performance. In total, SEISMIC employs six key parameters that affect different aspects of the algorithm:
 
-A good thing of SEISMIC is that it supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to re-index if they want to change the balance between search accuracy and query performance. In total, SEISMIC employs six key parameters that affect different aspects of the algorithm:
-
-### Index parameters
+## Index performance tuning
 
 These parameters affect index construction and memory usage:
 
@@ -34,7 +32,7 @@ This parameter controls how many tokens will be kept in `summary` of each cluste
 
 This parameter will control whether to activate SEISMIC algorithm within each segment. When you have more documents in total, the number of documents in one segment will tend to increase. At this time, you might want to increase this threshold to prevent repeating cluster building when small segments merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those small segments will fall back to rank features mode.
 
-### Query parameters
+## Query performance tuning
 
 These parameters affect search performance and recall:
 
@@ -71,6 +69,13 @@ PUT /_cluster/settings
 ```
 More details can be seen in [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/vector-search/ai-search/needs-to-be-implemented/).
 
+## Best practices
+
+- Start with default parameters and tune based on your specific dataset
+- Monitor memory usage and adjust cache settings accordingly
+- Use SEISMIC for large-scale datasets where query performance is critical
+- Consider the trade-off between indexing time and query performance
+- Do not combine SEISMIC and two-phase pipeline in hybrid search
 
 ## Troubleshooting performance issues
 
@@ -114,5 +119,5 @@ More details can be seen in [Neural-Search cluster settings]({{site.url}}{{site.
 
 ## Next steps
 
-- [Sparse ANN configuration reference]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration/)
+- [Sparse ANN configuration reference]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration/)
 - [Vector search performance monitoring]({{site.url}}{{site.baseurl}}/monitoring-your-cluster/pa/)
