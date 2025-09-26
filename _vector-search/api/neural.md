@@ -440,7 +440,7 @@ This API operation only works with indices created with `index.sparse` setting t
 The following request performs a warmup on three indexes:
 
 ```json
-POST /_plugins/_neural/seismic/warmup/index1,index2,index3?pretty
+POST /_plugins/_neural/warmup/index1,index2,index3?pretty
 {
   "_shards" : {
     "total" : 6,
@@ -487,7 +487,7 @@ This API operation only works with indices created with `index.sparse` setting t
 The following request evicts the sparse data of three indexes from the JVM memory:
 
 ```json
-POST /_plugins/_neural/seismic/clear_cache/index1,index2,index3?pretty
+POST /_plugins/_neural/clear_cache/index1,index2,index3?pretty
 {
   "_shards" : {
     "total" : 6,
