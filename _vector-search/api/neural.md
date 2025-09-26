@@ -367,12 +367,12 @@ The following table lists the available statistics. For statistics with paths pr
 
 **Node-level statistics: Memory**
 
-| Statistic name | Category             | Statistic path within category                                  | Description                                                                                           |
-| :--- |:---------------------|:----------------------------------------------------------------|:------------------------------------------------------------------------------------------------------|
-| `sparse_memory_usage_percentage` | `nodes`              | `memory.sparse.sparse_memory_usage_percentage`                  | The amount of JVM heap memory Seismic is using on the node as a percentage of the maximum JVM memory. |
-| `sparse_memory_usage` | `nodes`, `all_nodes` | `memory.sparse.sparse_memory_usage`                             | The amount of JVM heap memory Seismic is using on the node in kilobytes.                              |
-| `clustered_posting_usage` | `nodes`, `all_nodes` | `memory.sparse.clustered_posting_usage`                         | The amount of JVM heap memory Seismic is using to store clustered posting on the node in kilobytes.   |
-| `forward_index_usage` | `nodes`, `all_nodes` | `memory.sparse.forward_index_usage`                            | The amount of JVM heap memory Seismic is using to store forward index on the node in kilobytes.       |
+| Statistic name | Category             | Statistic path within category                                  | Description                                                                                                    |
+| :--- |:---------------------|:----------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------|
+| `sparse_memory_usage_percentage` | `nodes`              | `memory.sparse.sparse_memory_usage_percentage`                  | The amount of JVM heap memory used to store sparse data on the node as a percentage of the maximum JVM memory. |
+| `sparse_memory_usage` | `nodes`, `all_nodes` | `memory.sparse.sparse_memory_usage`                             | The amount of JVM heap memory used to store sparse data on the node in kilobytes.                              |
+| `clustered_posting_usage` | `nodes`, `all_nodes` | `memory.sparse.clustered_posting_usage`                         | The amount of JVM heap memory used to store clustered posting on the node in kilobytes.                        |
+| `forward_index_usage` | `nodes`, `all_nodes` | `memory.sparse.forward_index_usage`                            | The amount of JVM heap memory used to store clustered posting on the node in kilobytes.                |
 
 **Node-level statistics: Semantic highlighting**
 
