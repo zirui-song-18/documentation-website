@@ -8,9 +8,9 @@ has_math: true
 
 # Sparse ANN performance tuning
 
-This page provides comprehensive performance tuning guidance for the [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann/) algorithm in OpenSearch neural sparse search. SEISMIC offers multiple parameters that allow you to balance the trade-off between search recall (accuracy) and query performance (latency).
+This page provides comprehensive performance tuning guidance for the [sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann/) algorithm in OpenSearch sparse ANN search. Sparse ANN offers multiple parameters that allow you to balance the trade-off between query recall (accuracy) and query performance (latency).
 
-Our Sparse ANN feature supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to delete and recreate an index if they want to change the balance between search accuracy and query performance. In total, SEISMIC employs six key parameters that affect different aspects of the algorithm:
+Our sparse ANN feature supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to delete and recreate an index if they want to change the balance between search accuracy and query performance. In total, sparse ANN employs six key parameters that affect different aspects of the algorithm:
 
 ## Index performance tuning
 
@@ -18,19 +18,19 @@ These parameters affect index construction and memory usage:
 
 - **`n_postings`**: Maximum documents per posting list
 
-If a small `n_postings` is set, more aggressive pruning will be applied to the posting list, which means that fewer document identifiers are kept in one posting list. Reducing this parameter will accelerate index building time and query time but also reduce query recall and memory consumption. If you do not specify this parameter, SEISMIC algorithm will decide this value based on $$0.0005 \times \text{document count}$$. Please note that this document count is for segment level.
+If a small `n_postings` is set, more aggressive pruning will be applied to the posting list, which means that fewer document identifiers are kept in one posting list. Reducing this parameter will accelerate index building time and query time but also reduce query recall and memory consumption. If you do not specify this parameter, sparse ANN algorithm will decide this value based on $$0.0005 \times \text{document count}$$. Please note that this document count is for segment level.
 
 - **`cluster_ratio`**: Ratio to determine cluster count
 
-After pruning, there will be `cluster_ratio` $$*$$ `posting_document_count` in each posting list. A higher `cluster_ratio` will lead to more clusters, higher query recall, longer index builing time, and larger query latency. Also, more clusters will lead to higher memory consumption.
+After pruning, there will be `cluster_ratio` $$*$$ `posting_document_count` in each posting list. A higher `cluster_ratio` will lead to more clusters, higher query recall, longer index building time, and higher query latency. Also, more clusters will lead to higher memory consumption.
 
 - **`summary_prune_ratio`**: Ratio for pruning summary vectors
 
 This parameter controls how many tokens will be kept in `summary` of each cluster, where `summary` is used to determine whether a cluster should be examined during query. If you are using different embedding models whose number of tokens greatly vary, you can consider change this parameter. Higher `summary_prune_ratio` will keep more tokens inside `summary`.
 
-- **`approximate_threshold`**: Document threshold for SEISMIC activation
+- **`approximate_threshold`**: Document threshold for sparse ANN activation
 
-This parameter will control whether to activate SEISMIC algorithm within each segment. When you have more documents in total, the number of documents in one segment will tend to increase. At this time, you might want to increase this threshold to prevent repeating cluster building when small segments merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those small segments will fall back to rank features mode.
+This parameter will control whether to activate sparse ANN algorithm within each segment. When you have more documents in total, the number of documents in one segment will tend to increase. At this time, you might want to increase this threshold to prevent repeating cluster building when small segments merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those small segments will fall back to rank features mode.
 
 ## Query performance tuning
 
@@ -38,49 +38,32 @@ These parameters affect search performance and recall:
 
 - **`top_n`**: Query token pruning limit
 
-In SEISMIC algorithm, a query's tokens will be pruned to only keep `top_n` ones based on their weights. This parameter will dramatically affect the balance between search performance (latency) and query accuracy (recall). Higher `top_n` will bring with higher accuracy and latency.
+In sparse ANN algorithm, a query's tokens will be pruned to only keep `top_n` ones based on their weights. This parameter will dramatically affect the balance between search performance (latency) and query accuracy (recall). Higher `top_n` will bring with higher accuracy and latency.
 
 - **`heap_factor`**: Recall vs performance tuning multiplier
 
-Every time when SEISMIC determines whether to examine a cluster, it compares potential cluster's score with current queue top's score dividing by `heap_factor`. Larger `heap_factor` will push SEISMIC algorithm to examine more clusters, resulting in higher accuracy but slower query speed. This parameter is more fine-grained compared with `top_n`, which help you slightly tune the trade-off between accuracy and latency.
+Every time when sparse ANN determines whether to examine a cluster, it compares potential cluster's score with current queue top's score dividing by `heap_factor`. Larger `heap_factor` will push sparse ANN algorithm to examine more clusters, resulting in higher accuracy but slower query speed. This parameter is more fine-grained compared with `top_n`, which help you slightly tune the trade-off between accuracy and latency.
 
 ## Optimize beyond parameters
 
 ### Building clusters
 
-If your platform supports multiple processors, you can adjust the number of threads (`index_thread_qty`) during building clusters. The default value of `index_thread_qty` is 1, and you can change this setting according to [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/vector-search/ai-search/needs-to-be-implemented/). Higher `index_thread_qty` will reduce `force_merge` time when SEISMIC is activated, while comsuming more resources at the same time.
+Index building can benefit from multiple thread working, you can adjust the number of threads (`index_thread_qty`) during building clusters. The default value of `index_thread_qty` is 1, and you can change this setting according to [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/_vector-search/settings.md/). Higher `index_thread_qty` will reduce `force_merge` time when sparse ANN is activated, while consuming more resources at the same time.
 
 ### Query when no data in cache
 
-If you plan to conduct a query when there is no data in cache (e.g. reboot OpenSearch cluster), search latency will be quite high as more time will be spent on I/O to load data. To address this issue, you are welcome to call `warmup` API according to [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/vector-search/ai-search/needs-to-be-implemented/). This API will automatically load data from disk to cache, making sure the following query can have best performance. In contrast, you can also call `clear_cache` API to free memory usage.
-
-### Monitor memory usage
-
-Use circuit breaker settings to monitor and control memory. A higher circuit breaker limit will allow more memory space to use, which prevents frequent cache eviction.
-
-```json
-PUT /_cluster/settings
-{
-  "persistent": {
-    "plugins.neural_search.circuit_breaker.limit": "30%"
-  }
-}
-```
-{% include copy-curl.html %}
-
-More details can be seen in [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/vector-search/ai-search/needs-to-be-implemented/).
-
+If you just reboot OpenSearch service, there are no data in cache, so first hundreds of query requests could suffer from empty cache which leads to high query latency. To mitigate this "cold start" issue, you can call `warmup` API according to [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/). This API will automatically load data from disk to cache, making sure the following query can have best performance. In contrast, you can also call `clear_cache` API to free memory usage.
 
 ### Force merge your all segments
 
-Although Sparse ANN will automatically build clustered posting lists once a segment's document count exceeds `approximate_threshold`, you should expect reduced query latency after merging all your segments into one. In addition, you can set `approximate_threshold` to a high value which will not be touched for each segment but be exceeded after merging together. This kind of setting can avoid of repeated cluster building during the whole process.
+Although sparse ANN will automatically build clustered posting lists once a segment's document count exceeds `approximate_threshold`, you should expect reduced query latency after merging all your segments into one. In addition, you can set `approximate_threshold` to a high value which will not be touched for each segment but be exceeded after merging together. This kind of setting can avoid repeated cluster building during the whole process.
 
 ## Best practices
 
 - Start with default parameters and tune based on your specific dataset
 - Monitor memory usage and adjust cache settings accordingly
 - Consider the trade-off between indexing time and query performance
-- Do not combine Sparse ANN and two-phase pipeline in hybrid search
+- Do not combine sparse ANN and two-phase pipeline in hybrid search
 
 ## Next steps
 

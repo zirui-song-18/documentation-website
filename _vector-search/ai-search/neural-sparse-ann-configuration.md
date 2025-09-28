@@ -10,20 +10,21 @@ has_math: true
 
 # Sparse ANN configuration
 
-This page provides comprehensive configuration guidance for Sparse ANN, especially the SEISMIC algorithm, in OpenSearch neural sparse search.
+This page provides comprehensive configuration guidance for sparse ANN in OpenSearch neural sparse search.
 
 ## Prerequisites
 
-Before configuring Sparse ANN, ensure you have:
+Before configuring sparse ANN, ensure you have:
 
 - OpenSearch 3.3 or later with the neural-search plugin installed
-- Sufficient cluster resources (CPU cores & JVM memory) for Sparse ANN index building and caching. See [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/).
 
-## Step 1: Create an index
+## Step 1: Create sparse ANN index
 
-To use Sparse ANN, you must enable sparse setting at the index level by setting `"sparse": true`
+To use sparse ANN, you must enable sparse setting at the index level by setting `"sparse": true`
 
-In addition, there are some special parameters in a mapping field. You can specify what settings you want to use, such as `n_postings`, `cluster_ratio`, `summary_prune_ratio`, and `approximate_threshold`. More details can be seen in More details can be seen in [Sparse ANN index setting]({{site.url}}{{site.baseurl}}/field-types/supported-field-types/index/)
+Besides, you should use `sparse_vector` as the field type, because sparse ANN is designed to use sparse vectors.
+
+In addition, there are some special parameters in a mapping field. You can specify what settings you want to use, such as `n_postings`, `cluster_ratio`, `summary_prune_ratio`, and `approximate_threshold`. More details can be seen in [sparse ANN index setting]({{site.url}}{{site.baseurl}}/field-types/supported-field-types/index/)
 
 ### Example
 ```json
@@ -58,9 +59,9 @@ PUT /sparse-ann-documents
 
 ## Step 2: Ingest data
 
-### Step 2.a: Directly ingest data
+### Step 2.a: Directly ingest embeddings
 
-After a Sparse ANN index is successfully created, you can ingest data into it
+After a sparse ANN index is successfully created, you can ingest sparse embeddings with tokens in the form of Integers into it
 
 ```json
 POST _bulk
@@ -73,7 +74,7 @@ POST _bulk
 
 ### Step 2.b: Force merge (Optional)
 
-To obtain better query performance, you can choose to merge all segments into one. More details can be seen in [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
+To obtain better query performance, you can choose to merge all segments into one. More details can be seen in [sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
 
 ```json
 POST /sparse-ann-documents/_forcemerge?max_num_segments=1
@@ -82,11 +83,11 @@ POST /sparse-ann-documents/_forcemerge?max_num_segments=1
 
 ## Step 3: Conduct a query
 
-Now, you can prepare a query to revtrieve information from the index you just built. Please note that you should not combine Sparse ANN with [two-phase]({{site.url}}{{site.baseurl}}/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/) pipeline.
+Now, you can prepare a query to revtrieve information from the index you just built. Please note that you should not combine sparse ANN with [two-phase]({{site.url}}{{site.baseurl}}/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/) pipeline.
 
-### Natural Language query
+### Natural language query
 
-Query Sparse ANN fields using the enhanced `neural_sparse` query:
+Query sparse ANN fields using the enhanced `neural_sparse` query:
 
 ```json
 GET /sparse-ann-documents/_search
@@ -106,7 +107,7 @@ GET /sparse-ann-documents/_search
 ```
 {% include copy-curl.html %}
 
-### Raw vector Sparse ANN query
+### Raw vector query
 In addition, you can also prepare sparse vectors in advance so that you can send a raw vector as a query. Please note that you should use tokens in a form of Integer here instead of raw text.
 ```json
 GET /sparse-ann-documents/_search
@@ -147,7 +148,7 @@ PUT /_cluster/settings
 {% include copy-curl.html %}
 
 ### Memory and caching settings
-Sparse ANN is equipped a circuit breaker to prevent consuming too much memory space, so users do not need to worry about affecting other OpenSearch services. The default value of `circuit_breaker.limit` is $$10\%$$, and you can set a different limit value to control its memory size and cache performance. Here is an example to call the circuit breaker cluster setting API:
+Sparse ANN equipped a circuit breaker to prevent the algorithm consuming too much memory, so users do not need to worry about affecting other OpenSearch functionalities. The default value of `circuit_breaker.limit` is $$10\%$$, and you can set a different limit value to control the total memory the algorithm will use. Once the memory reaches this limit, a cache eviction would incur and data which are used least frequently will be evicted. Here is an example to call the circuit breaker cluster setting API:
 ```json
 PUT _cluster/settings
 {
@@ -158,32 +159,14 @@ PUT _cluster/settings
 ```
 {% include copy-curl.html %}
 
-More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/).
+A higher circuit breaker limit will allow more memory space to use, which prevents frequent cache eviction, but it could impact other OpenSearch's operation. A lower limit will guarantee more safety, but it may trigger more frequent cache eviction. More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/)
+
+### Monitor sparse ANN
+
+Use stats API to monitor memory usage and query stats. More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/)
 
 ## Performance tuning
-Sparse ANN provides users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings. Check guidance in [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
-
-## Common issues
-
-**Slow query performance**
-1. Sparse ANN is not activated:
-    - Check that `index.sparse: true` is set
-    - Verify segment size exceeds `approximate_threshold`
-    - Confirm field type is `sparse_vector`
-2. Improper parameters:
-    - Decrease `heap_factor` and `top_n` parameters
-    - Change `approximate_threshold` on a new index if needed
-
-**High memory usage**
-- Reduce `n_postings` parameter
-- Adjust cache settings
-- Consider increasing `approximate_threshold`
-
-**Indexing failures**
-- Monitor thread pool settings
-- Check available memory during indexing
-- Verify sparse vector generation in pipeline
-
+Sparse ANN provides users with an opportunity to balance the trade-off between how accurate search results are and how fast search process can be. In short, you can tune balance between recall and latency with following parameter settings. Check guidance in [sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
 
 ## Next steps
 
