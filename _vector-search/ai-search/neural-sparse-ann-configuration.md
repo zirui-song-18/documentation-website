@@ -83,12 +83,10 @@ GET /sparse-ann-documents/_search
 {
   "query": {
     "neural_sparse": {
-      "content_vector": {
+      "sparse_embedding": {
         "query_text": "machine learning algorithms",
         "model_id": "your_sparse_model_id",
-        "k": 10,
-        "top_n": 10,
-        "heap_factor": 1.0
+        "method_parameters": {"heap_factor": 1.3, "cut": 6, "k": 10}
       }
     }
   }

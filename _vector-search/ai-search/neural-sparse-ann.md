@@ -5,8 +5,6 @@ parent: Neural sparse search
 grand_parent: AI search
 nav_order: 60
 has_children: true
-redirect_from:
-  - /search-plugins/neural-sparse-seismic/
 ---
 
 # Sparse Approximate Search
@@ -17,9 +15,9 @@ Introduced 3.3.0
 
 SEISMIC brings better scalability for neural sparse search especially for those large-scale datasets with billions of vectors. This innovative approach leverages clustered posting lists and approximate retrieval techniques to maintain consistently fast query speeds, even as data scales exponentially. SEISMIC's architecture ensures that query performance remains robust and efficient regardless of dataset size, providing the scalability needed for enterprise-level neural sparse search applications.
 
-Now, approximate sparse search is available with SEISMIC algorithm in the Neural-Search plugin to provide outstanding sparse vector query performance.
+Now, sparse ANN is available with SEISMIC algorithm in the Neural-Search plugin to provide outstanding sparse vector query performance.
 
-## How sparse ANN (SEISMIC) works
+## How sparse ANN works
 
 Sparse ANN operates through a sophisticated two-stage process that optimizes both indexing and querying of neural sparse vectors:
 
@@ -119,8 +117,6 @@ Sparse ANN is particularly beneficial for:
 
 - **Large-scale applications**: Datasets with millions to billions of documents where query performance is critical
 - **High-throughput scenarios**: Applications requiring fast response times under heavy query loads
-- **Memory-constrained environments**: Systems where traditional dense vector approaches are not feasible due to its large index size
-- **Hybrid search systems**: Applications combining multiple retrieval methods for optimal performance
 
 Consider sparse ANN when you need the efficiency of sparse retrieval but require better performance than traditional neural sparse search methods can provide at scale.
 
