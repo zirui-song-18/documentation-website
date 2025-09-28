@@ -19,14 +19,19 @@ Before configuring Sparse ANN, ensure you have:
 - OpenSearch 3.3 or later with the neural-search plugin installed
 - Sufficient cluster resources (CPU cores & JVM memory) for Sparse ANN index building and caching. See [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/).
 
-## Step 1: Index configuration
+## Step 1: Create an index
 
-### Enable sparse for an index
+### Step 1.a: Enable sparse for an index
 
-To use Sparse ANN, you must enable sparse setting at the index level:
+To use Sparse ANN, you must enable sparse setting at the index level by setting `"sparse": true`
 
+### Step 1.b: Give specific mapping parameters
+
+In Sparse ANN, there are some special parameters in a mapping field. You can specify what settings you want to use, such as `n_posting`, `cluster_ratio`, `summary_prune_ratio`, and `approximate_threshold`. More details can be seen in More details can be seen in [Sparse ANN index setting]({{site.url}}{{site.baseurl}}/field-types/supported-field-types/index/)
+
+### Example
 ```json
-PUT /seismic-documents
+PUT /sparse-ann-documents
 {
   "settings": {
     "index": {
@@ -34,18 +39,7 @@ PUT /seismic-documents
       "number_of_shards": 2,
       "number_of_replicas": 1
     }
-  }
-}
-```
-
-## Step 2: Field mapping configuration
-
-### SEISMIC field type
-
-Configure sparse vector fields with the `sparse_vector` type and SEISMIC algorithm:
-
-```json
-{
+  },
   "mappings": {
     "properties": {
       "sparse_embedding": {
@@ -53,7 +47,7 @@ Configure sparse vector fields with the `sparse_vector` type and SEISMIC algorit
         "method": {
           "name": "seismic",
           "parameters": {
-            "n_postings": 300,
+            "n_postings": 4000,
             "cluster_ratio": 0.1,
             "summary_prune_ratio": 0.4,
             "approximate_threshold": 1000000
@@ -65,46 +59,31 @@ Configure sparse vector fields with the `sparse_vector` type and SEISMIC algorit
 }
 ```
 
-### Multiple sparse fields
+## Step 2: Ingest data
 
-You can configure multiple sparse ANN fields with different hyper-parameters in the same index:
+### Step 2.a: Directly ingest data
+
+After a Sparse ANN index is successfully created, you can ingest data into it
 
 ```json
-{
-  "mappings": {
-    "properties": {
-      "title_vector": {
-        "type": "sparse_vector",
-        "method": {
-          "name": "seismic",
-          "parameters": {
-            "n_postings": 2000,
-            "cluster_ratio": 0.1,
-            "summary_prune_ratio": 0.4,
-            "approximate_threshold": 1000000
-          }
-        }
-      },
-      "content_vector": {
-        "type": "sparse_vector",
-        "method": {
-          "name": "seismic",
-          "parameters": {
-            "n_postings": 4000,
-            "cluster_ratio": 0.15,
-            "summary_prune_ratio": 0.36,
-            "approximate_threshold": 2000000
-          }
-        }
-      }
-    }
-  }
-}
+POST _bulk
+{ "create": { "_index": "sparse-ann-documents", "_id": "0" } }
+{ "sparse_embedding": {"10": 0.85, "23": 1.92, "24": 0.67, "78": 2.54, "156": 0.73} }
+{ "create": { "_index": "sparse-ann-documents", "_id": "1" } }
+{ "sparse_embedding": {"3": 1.22, "19": 0.11, "21": 0.35, "300": 1.74, "985": 0.96} }
 ```
 
-## Step 3: Query configuration
+### Step 2.b: Force merge (Optional)
 
-### Basic Sparse ANN query
+To obtain better query performance, you can choose to merge all segments into one. More details can be seen in [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
+
+```json
+POST /sparse-ann-documents/_forcemerge?max_num_segments=1
+```
+
+## Step 3: Conduct a query
+
+### Natural Language query
 
 Query Sparse ANN fields using the enhanced `neural_sparse` query:
 
@@ -125,7 +104,7 @@ GET /seismic-documents/_search
 }
 ```
 ### Raw vector Sparse ANN query
-In addition, you can also prepare sparse vectors in advance so that you can send a raw vector as a query. Please note that you should use tokens with integer IDs here instead of raw text.
+In addition, you can also prepare sparse vectors in advance so that you can send a raw vector as a query. Please note that you should use tokens in a form of Integer here instead of raw text.
 ```json
 GET /seismic-documents/_search
 {
@@ -133,7 +112,8 @@ GET /seismic-documents/_search
     "neural_sparse": {
       "sparse_embedding": {
         "query_tokens": {
-          "1055": 20
+          "1055": 20,
+          "2931": 2.3
         },
         "method_parameters": {
           "heap_factor": 1.2,
@@ -145,41 +125,6 @@ GET /seismic-documents/_search
   }
 }
 ```
-
-## Parameters reference
-
-### Index settings
-
-| Parameter | Type | Required | Description | Default | Example |
-|-----------|------|----------|-------------|---------|---------|
-| `index.sparse` | Boolean | Yes | Enable sparse ANN for the index | `false` | `true` |
-
-### Algorithm parameters
-
-| Parameter | Type | Required | Description | Default | Range | Example |
-|-----------|------|----------|-------------|---------|---------|---------|
-| `name` | String | Yes | Algorithm name | - | - | `"seismic"` |
-| `n_postings` | Integer | No | Maximum documents per posting list (λ parameter) | `0.0005* doc count`¹ | $$(0, \infty)$$ | `4000` |
-| `cluster_ratio` | Float | No | Ratio to determine cluster count | `0.1` | $$(0, 1)$$ | `0.15` |
-| `summary_prune_ratio` | Float | No | Ratio for pruning summary vectors (α parameter) | `0.4` | $$(0, 1]$$ | `0.3` |
-| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000` | $$[0, \infty)$$ | `500000` |
-
-¹doc count here is segment level
-
-### Query parameters
-
-| Parameter | Type | Required | Description | Default | Range | Example |
-|-----------|------|----------|-------------|---------|---------|---------|
-| `k` | Integer | Yes | Number of results to return | - | $$>0$$ | `10` |
-| `model_id` | String | Yes² | Sparse encoding model ID | - | - | `"abc123def456"` |
-| `query_text` | String | No¹ | Text to encode and search | - | - | `"machine learning"` |
-| `query_tokens` | Object | No¹ | Pre-encoded token map | - | - | `{"token": 0.8}` |
-| `top_n` | Integer | No | Query token pruning limit | `10` | $$>0$$ | `15` |
-| `heap_factor` | Float | No | Recall vs performance tuning | `1.0` | $$>0$$ | `1.5` |
-| `filter` | Object | No | Pre-filtering query | - | - | `{"term": {...}}` |
-
-¹Either `query_text` or `query_tokens` is required\
-²Required when using `query_text`
 
 ## Cluster settings
 
@@ -197,13 +142,12 @@ PUT /_cluster/settings
 ```
 
 ### Memory and caching settings
-Sparse ANN may consume much memory space due to its clustered posting list and forward index structure. If you worry about the SEISMIC index consuming too much memory space, you can set a circuit breaker to protect OpenSearch cluster running and other plugin services. Here is an example to call the circuit breaker cluster setting API:
+Sparse ANN is equipped a circuit breaker to prevent consuming too much memory space, so users do not need to worry about affecting other OpenSearch services. The default value of `circuit_breaker.limit` is $$10\%$$, and you can set a different limit value to control its memory size and cache performance. Here is an example to call the circuit breaker cluster setting API:
 ```json
 PUT _cluster/settings
 {
   "persistent": {
-    "plugins.neural_search.circuit_breaker.limit": "30%",
-    "plugins.neural_search.circuit_breaker.overhead": "1.01"
+    "plugins.neural_search.circuit_breaker.limit": "30%"
   }
 }
 ```
@@ -216,19 +160,19 @@ Sparse ANN provides users with an opportunity to balance the trade-off between h
 
 ### Common issues
 
-**Sparse ANN not activating**
-- Check that `index.sparse: true` is set
-- Verify segment size exceeds `approximate_threshold`
-- Confirm field type is `sparse_vector`
+**Slow query performance**
+1. Sparse ANN is not activated:
+    - Check that `index.sparse: true` is set
+    - Verify segment size exceeds `approximate_threshold`
+    - Confirm field type is `sparse_vector`
+2. Inproper parameters:
+    - Tune `heap_factor` and `top_n` parameters
+    - Change `approximate_threshold` if needed
 
 **High memory usage**
 - Reduce `n_postings` parameter
 - Adjust cache settings
 - Consider increasing `approximate_threshold`
-
-**Slow Sparse ANN query performance**
-- Tune `heap_factor` and `top_n` parameters
-- Check `approximate_threshold` and [`_cat/segments`]({{site.url}}{{site.baseurl}}/api-reference/cat/index/) API.
 
 **Indexing failures**
 - Monitor thread pool settings
@@ -239,4 +183,3 @@ Sparse ANN provides users with an opportunity to balance the trade-off between h
 ## Next steps
 
 - [Sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
-- [Hybrid search with SEISMIC]({{site.url}}{{site.baseurl}}/search-plugins/hybrid-search/)

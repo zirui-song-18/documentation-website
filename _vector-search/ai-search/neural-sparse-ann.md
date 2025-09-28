@@ -27,9 +27,9 @@ During the indexing phase, Sparse ANN implements several key optimizations:
 
 1. **Posting list clustering**: For each term in the inverted index, Sparse ANN:
    - Sorts documents by their token weights in descending order
-   - Retains only the top λ (lambda) documents with highest weights
-   - Applies a clustering algorithm to group similar documents into β (beta) clusters
-   - Generates summary sparse vectors for each cluster, keeping only the top α (alpha) tokens
+   - Retains only the top `n_posting` documents with highest weights
+   - Applies a clustering algorithm to group similar documents into one cluster
+   - Generates summary sparse vectors for each cluster, keeping only the top large-weighted tokens
 
 2. **Forward index maintenance**: Sparse ANN maintains both the clustered inverted index and a forward index that stores all sparse vectors for efficient access during query processing.
 
@@ -39,7 +39,7 @@ During the indexing phase, Sparse ANN implements several key optimizations:
 
 During query execution, Sparse ANN employs an efficient retrieval process:
 
-1. **Token-level pruning**: Once a query is given to Sparse ANN, its all tokens will be pruned based on their weights. Only `top_n` tokens with highest weight will be kept, so that fewer posting lists will be visited.
+1. **Token-level pruning**: Once a query is given to Sparse ANN, its all tokens will be sorted based on their weights. Only `top_n` tokens with highest weight will be kept, so that fewer posting lists will be visited.
 
 2. **Cluster-level pruning**: The algorithm first computes dot product scores between the query vector and cluster summary vectors. Only clusters with scores above a dynamic threshold are selected for detailed examination.
 
@@ -73,13 +73,15 @@ Sparse ANN provides several tunable parameters to optimize performance for diffe
 ### Index-level settings
 
 - **index.sparse**: Boolean flag to enable sparse ANN fields in the index
-- **approximate_threshold**: Document count threshold that triggers SEISMIC algorithm on a segment (default: 100,000)
 
 ### Field mapping parameters
 
-- **n_postings** (λ): Number of top documents to retain for each posting list
+- **n_postings**: Number of top documents to retain for each posting list
 - **cluster_ratio**: Ratio used to determine cluster count in posting lists (default: 0.1)
-- **summary_prune_ratio** (α): Ratio of tokens to keep in cluster summary vectors (default: 0.4)
+- **summary_prune_ratio**: Ratio of tokens to keep in cluster summary vectors (default: 0.4)
+- **approximate_threshold**: Document count threshold that triggers SEISMIC algorithm on a segment (default: 100,000)
+
+More details can be seen in [Sparse ANN index setting]({{site.url}}{{site.baseurl}}/field-types/supported-field-types/index/)
 
 ### Query parameters
 
@@ -87,6 +89,8 @@ Sparse ANN provides several tunable parameters to optimize performance for diffe
 - **k**: Number of nearest neighbors to return
 - **heap_factor**: Tuning parameter for recall vs. QPS trade-off (default: 1.0)
 - **filter**: Optional boolean filter for pre-filtering or post-filtering
+
+More details can be seen in [Sparse ANN query]({{site.url}}{{site.baseurl}}/query-dsl/specialized/neural-sparse/)
 
 ## Performance characteristics
 
@@ -148,5 +152,4 @@ For detailed setup instructions, see [Sparse ANN configuration]({{site.url}}{{si
 
 - [Original SEISMIC paper](https://arxiv.org/abs/2404.18812): "Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations"
 - [OpenSearch neural sparse search blog](https://opensearch.org/blog/improving-document-retrieval-with-sparse-semantic-encoders/): Learn about sparse encoding fundamentals
-- [Two-phase query optimization](https://opensearch.org/blog/introducing-a-neural-sparse-two-phase-algorithm/): Understanding the foundation SEISMIC builds upon
 - [Neural sparse search documentation]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-search/): Core concepts and implementation
