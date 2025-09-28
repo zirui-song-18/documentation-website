@@ -59,8 +59,6 @@ PUT /sparse-ann-documents
 
 ## Step 2: Ingest data
 
-### Step 2.a: Directly ingest embeddings
-
 After a sparse ANN index is successfully created, you can ingest sparse embeddings with tokens in the form of Integers into it
 
 ```json
@@ -69,15 +67,6 @@ POST _bulk
 { "sparse_embedding": {"10": 0.85, "23": 1.92, "24": 0.67, "78": 2.54, "156": 0.73} }
 { "create": { "_index": "sparse-ann-documents", "_id": "1" } }
 { "sparse_embedding": {"3": 1.22, "19": 0.11, "21": 0.35, "300": 1.74, "985": 0.96} }
-```
-{% include copy-curl.html %}
-
-### Step 2.b: Force merge (Optional)
-
-To obtain better query performance, you can choose to merge all segments into one. More details can be seen in [sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/)
-
-```json
-POST /sparse-ann-documents/_forcemerge?max_num_segments=1
 ```
 {% include copy-curl.html %}
 

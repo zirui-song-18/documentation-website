@@ -63,7 +63,7 @@ Although sparse ANN will automatically build clustered posting lists once a segm
 - Start with default parameters and tune based on your specific dataset
 - Monitor memory usage and adjust cache settings accordingly
 - Consider the trade-off between indexing time and query performance
-- Do not combine sparse ANN and two-phase pipeline in hybrid search
+- Do not combine sparse ANN field and two-phase pipeline in hybrid search
 
 ## Next steps
 
