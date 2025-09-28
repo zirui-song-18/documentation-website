@@ -10,7 +10,7 @@ has_math: true
 
 This page provides comprehensive performance tuning guidance for the [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann/) algorithm in OpenSearch neural sparse search. SEISMIC offers multiple parameters that allow you to balance the trade-off between search recall (accuracy) and query performance (latency).
 
-Our Sparse ANN feature supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to re-index if they want to change the balance between search accuracy and query performance. In total, SEISMIC employs six key parameters that affect different aspects of the algorithm:
+Our Sparse ANN feature supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to delete and recreate an index if they want to change the balance between search accuracy and query performance. In total, SEISMIC employs six key parameters that affect different aspects of the algorithm:
 
 ## Index performance tuning
 
