@@ -1,38 +1,43 @@
 ---
 layout: default
-title: Sparse-Vector field type
-nav_order: 60
+title: Sparse Vector
+nav_order: 61
 has_children: false
 parent: Supported field types
 ---
 
-# Sparse-Vector field type
+# Sparse Vector
 **Introduced 3.3**
 {: .label .label-purple }
 
-Users can index and search with a sparse index. The sparse-vector field boosts the search efficiency for sparse vectors via approximate search algorithms.
+The `sparse_vector` field supports sparse ANN (Approximate Nearest Neighbor) algorithm. This significantly boosts the search efficiency while maintaining high search relevance. The `sparse_vector` field is represented like a map, where the key denotes token and the value is a positive [float]({{site.url}}{{site.baseurl}}/opensearch/supported-field-types/numeric/) value indicating the token weight.
 
-For more information, see [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic.md).
+For more information, see [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic).
     
-## Sparse-Vector
+## Parameters
 
-The sparse vector is represented like a map, where the key is a token and the value is a positive [float]({{site.url}}{{site.baseurl}}/opensearch/supported-field-types/numeric/) value indicating the token weight. 
+The `sparse_vector` field type supports the following parameters.
 
-| Parameter               | Type    | Required | Description                               | Default               | Range           | Example   |
-|-------------------------|---------|----------|-------------------------------------------|-----------------------|-----------------|-----------|
-| `name`                  | String  | Yes | Algorithm name                            | -                     | -               | `seismic` |
-| `n_postings`            | Integer | No | Maximum documents per posting list        | `0.0005 * doc count`¹ | $$(0, \infty)$$ | `4000`    |
-| `cluster_ratio`         | Float   | No | Ratio to determine cluster count          | `0.1`                 | $$(0, 1)$$      | `0.15`    |
-| `summary_prune_ratio`   | Float   | No | Ratio for pruning cluster summary vectors | `0.4`                 | $$(0, 1]$$      | `0.3`     |
-| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000`             | $$[0, \infty)$$ | `500000`  |
-| `quantization_ceiling_search`  | Float   | No | Document threshold for SEISMIC activation | `16`                  | $$(0, \infty)$$ | `3`       |
-| `quantization_ceiling_ingest` | Float | No | Document threshold for SEISMIC activation | `3`                   | $$(0, \infty)$$ | `2.5`     |
+| Parameter               | Type    | Required | Description                                  | Default               | Range           | Example   |
+|-------------------------|---------|----------|----------------------------------------------|-----------------------|-----------------|-----------|
+| `name`                  | String  | Yes | Algorithm name                               | -                     | -               | `seismic` |
+| `n_postings`            | Integer | No | Maximum documents per posting list           | `0.0005 * doc_count`¹ | $$(0, \infty)$$ | `4000`    |
+| `cluster_ratio`         | Float   | No | Ratio to determine cluster count             | `0.1`                 | $$(0, 1)$$      | `0.15`    |
+| `summary_prune_ratio`   | Float   | No | Ratio for pruning cluster summary vectors    | `0.4`                 | $$(0, 1]$$      | `0.3`     |
+| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation    | `1,000,000`           | $$[0, \infty)$$ | `500000`  |
+| `quantization_ceiling_search`  | Float   | No | Document threshold for sparse ANN activation | `16`                  | $$(0, \infty)$$ | `3`       |
+| `quantization_ceiling_ingest` | Float | No | Document threshold for SEISMIC activation    | `3`                   | $$(0, \infty)$$ | `2.5`     |
 
-¹doc count here is segment level
+¹Here, `doc_count` represents the number of segments within the segment.
 
-### Example
+For parameter configuration, you can refer to [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration)  
+{: .note }
 
-Create a mapping with a sparse vector field.
+## Example
+
+### Step 1: Index creation
+
+Create a sparse index where index mapping contains a sparse vector field.
 
 ```json
 PUT sparse-vector-index
@@ -65,8 +70,7 @@ PUT sparse-vector-index
 To use sparse-vector field, you need to specify the index setting `index.sparse` to be `true`
 {: .note }
 
-For hyper-parameter configuration, you can refer to [`Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration.md)  
-{: .note }
+### Step 2: Data ingestion
 
 Index three documents with a sparse_vector field:
 
@@ -100,9 +104,11 @@ PUT sparse-vector-index/_doc/3
 ```
 {% include copy-curl.html %}
 
-## Neural Sparse query
+### Step 3: Query
 
-Using a neural-sparse query, you can query the sparse index either by raw vectors or query_text
+Using a `neural_sparse` query, you can query the sparse index either by raw vectors or natural language.
+
+#### Query with raw vector
 
 ```json
 GET sparse-vector-index/_search
@@ -111,7 +117,7 @@ GET sparse-vector-index/_search
     "neural_sparse": {
       "sparse_embedding": {
         "query_tokens": {
-          "1055": 20
+          "1055": 5.5
         },
         "method_parameters": {
           "heap_factor": 1.0,
@@ -125,17 +131,21 @@ GET sparse-vector-index/_search
 ```
 {% include copy-curl.html %}
 
+#### Query with natural language
+
 ```json
 GET sparse-vector-index/_search
 {
   "query": {
     "neural_sparse": {
       "sparse_embedding": {
-        "query_text": "machine learning algorithms",
-        "model_id": "your_sparse_model_id",
-        "k": 10,
-        "top_n": 10,
-        "heap_factor": 1.0
+        "query_text": "<input text>",
+        "model_id": "<model ID>",
+        "method_parameters": {
+          "k": 10,
+          "top_n": 10,
+          "heap_factor": 1.0
+        }
       }
     }
   }
@@ -143,6 +153,6 @@ GET sparse-vector-index/_search
 ```
 {% include copy-curl.html %}
 
-For query parameter configuration, you can refer to [`Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic-configuration.md) and [`Sparse performance tuning`]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse.md). 
+For more details, you can refer to [`Sparse ANN query`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration/#sparse-ann-query) and [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration).
 {: .note }
 

@@ -424,7 +424,7 @@ The `timestamped_event_counter` object contains the following metadata fields.
 Introduced 3.3
 {: .label .label-purple }
 
-The sparse indices used to perform approximate sparse search. To maximize the search efficiency, the plugin caches the sparse data in JVM memory.
+The sparse indices support sparse ANN (Approximate Nearest Neighbor) search. To maximize the search efficiency, the neural plugin caches the sparse data in JVM memory.
 
 If the plugin has not loaded the sparse data into JVM memory, then it loads them when it receives a search request. The loading time can cause high latency during initial queries. To avoid this, users often run random queries during a warmup period. After this warmup period, the sparse data are loaded into JVM memory, and their production workloads can launch. This loading process is indirect and requires extra effort.
 
@@ -453,7 +453,7 @@ POST /_plugins/_neural/warmup/index1,index2,index3?pretty
 
 The `total` value indicates the number of shards that the neural plugin attempted to warm up. The response also includes the number of shards that the plugin successfully warmed up and failed to warm up.
 
-The neural search warmup API can be used with index patterns to clear one or more indexes that match the given pattern from the cache, as shown in the following example:
+The neural search warmup API can be used with index patterns to clear one or more indices that match the given pattern from the cache, as shown in the following example:
 
 ```json
 POST /_plugins/_neural/warm_up/index*?pretty
