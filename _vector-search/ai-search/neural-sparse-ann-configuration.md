@@ -72,7 +72,7 @@ POST _bulk
 
 ## Step 3: Conduct a query
 
-Now, you can prepare a query to revtrieve information from the index you just built. Please note that you should not combine sparse ANN with [two-phase]({{site.url}}{{site.baseurl}}/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/) pipeline.
+Now, you can prepare a query to retrieve information from the index you just built. Please note that you should not combine sparse ANN with [two-phase]({{site.url}}{{site.baseurl}}/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/) pipeline.
 
 ### Natural language query
 
@@ -146,7 +146,7 @@ PUT _cluster/settings
 ```
 {% include copy-curl.html %}
 
-A higher circuit breaker limit will allow more memory space to use, which prevents frequent cache eviction, but it could impact other OpenSearch's operation. A lower limit will guarantee more safety, but it may trigger more frequent cache eviction. More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/)
+A higher circuit breaker limit will allow more memory space to use, which prevents frequent cache eviction, but it may impact other OpenSearch's operation. A lower limit will guarantee more safety, but it may trigger more frequent cache eviction. More details can be seen in [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/)
 
 ### Monitor sparse ANN
 

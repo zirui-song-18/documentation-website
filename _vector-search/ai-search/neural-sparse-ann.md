@@ -19,9 +19,9 @@ Now, sparse ANN is available with SEISMIC algorithm in the Neural-Search plugin 
 
 ## How sparse ANN works
 
-Sparse ANN operates through a sophisticated two-stage process that optimizes both indexing and querying of neural sparse vectors:
+Sparse ANN operates through a series of sophisticated techniques that optimizes both indexing and querying of neural sparse vectors:
 
-### Indexing stage
+### Indexing
 
 During the indexing phase, sparse ANN implements several key optimizations:
 
@@ -33,7 +33,7 @@ During the indexing phase, sparse ANN implements several key optimizations:
 
 2. **Forward index maintenance**: Sparse ANN maintains both the clustered inverted index and a forward index that stores all sparse vectors for efficient access during query processing.
 
-### Query processing stage
+### Query processing
 
 During query execution, sparse ANN employs an efficient retrieval process:
 
@@ -47,10 +47,10 @@ This approach dramatically reduces the number of documents that need to be score
 
 ### Hybrid indexing behavior
 
-Sparse ANN uses a hybrid approach for sparse ANN based on segment size:
+Sparse ANN uses a hybrid indexing approach based on doc size on segments to achieve a balance between indexing performance and query performance:
 
-- **Segments with doc count below `approximate_threshold`**: Use plain neural sparse (rank features) with existing neural sparse query logic
-- **Segments with doc count above `approximate_threshold`**: Apply sparse ANN clustering algorithm with new query logic
+- **Segments with doc count below `approximate_threshold`**: Still build plain neural sparse (rank features) index and search with existing neural sparse query
+- **Segments with doc count above `approximate_threshold`**: Build sparse ANN index and search with sparse ANN query
 
 This ensures optimal performance across different data scales while maintaining indexing efficiency for smaller datasets. It also provides good backward compatibility that users can still make plain neural sparse query
 
@@ -66,7 +66,7 @@ Sparse ANN offers several advantages over traditional neural sparse search appro
 
 ## Configuration parameters
 
-Sparse ANN provides several tunable parameters to optimize performance for different use cases:
+Sparse ANN provides several parameters to optimize performance for different use cases:
 
 ### Index-level settings
 

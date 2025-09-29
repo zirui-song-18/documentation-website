@@ -30,7 +30,7 @@ This parameter controls how many tokens will be kept in `summary` of each cluste
 
 - **`approximate_threshold`**: Document threshold for sparse ANN activation
 
-This parameter will control whether to activate sparse ANN algorithm within each segment. When you have more documents in total, the number of documents in one segment will tend to increase. At this time, you might want to increase this threshold to prevent repeating cluster building when small segments merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those small segments will fall back to rank features mode.
+This parameter will control whether to activate sparse ANN algorithm in a segment when it's total number of documents reaches the threshold. When you have more documents in total, the number of documents in one segment will tend to increase. In this scenario, you may set this threashold larger to prevent repeating cluster building when segments with fewer documents merge together. This parameter matters especially when you do not `force_merge` all segments into one, as those segments with documents less than the threshold will fall back to rank features mode. Please note that you may not see sparse ANN activated if you set this value very high.
 
 ## Query performance tuning
 
@@ -50,13 +50,18 @@ Every time when sparse ANN determines whether to examine a cluster, it compares 
 
 Index building can benefit from multiple thread working, you can adjust the number of threads (`index_thread_qty`) during building clusters. The default value of `index_thread_qty` is 1, and you can change this setting according to [Neural-Search cluster settings]({{site.url}}{{site.baseurl}}/_vector-search/settings.md/). Higher `index_thread_qty` will reduce `force_merge` time when sparse ANN is activated, while consuming more resources at the same time.
 
-### Query when no data in cache
+### Query after cold start
 
 If you just reboot OpenSearch service, there are no data in cache, so first hundreds of query requests could suffer from empty cache which leads to high query latency. To mitigate this "cold start" issue, you can call `warmup` API according to [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/). This API will automatically load data from disk to cache, making sure the following query can have best performance. In contrast, you can also call `clear_cache` API to free memory usage.
 
-### Force merge your all segments
+### Force merge into one segment
 
 Although sparse ANN will automatically build clustered posting lists once a segment's document count exceeds `approximate_threshold`, you should expect reduced query latency after merging all your segments into one. In addition, you can set `approximate_threshold` to a high value which will not be touched for each segment but be exceeded after merging together. This kind of setting can avoid repeated cluster building during the whole process.
+
+```json
+POST /sparse-ann-documents/_forcemerge?max_num_segments=1
+```
+{% include copy-curl.html %}
 
 ## Best practices
 
