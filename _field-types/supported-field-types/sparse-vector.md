@@ -18,6 +18,18 @@ For more information, see [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-searc
 
 The sparse vector is represented like a map, where the key is a token and the value is a positive [float]({{site.url}}{{site.baseurl}}/opensearch/supported-field-types/numeric/) value indicating the token weight. 
 
+| Parameter               | Type    | Required | Description                               | Default               | Range           | Example   |
+|-------------------------|---------|----------|-------------------------------------------|-----------------------|-----------------|-----------|
+| `name`                  | String  | Yes | Algorithm name                            | -                     | -               | `seismic` |
+| `n_postings`            | Integer | No | Maximum documents per posting list        | `0.0005 * doc count`¹ | $$(0, \infty)$$ | `4000`    |
+| `cluster_ratio`         | Float   | No | Ratio to determine cluster count          | `0.1`                 | $$(0, 1)$$      | `0.15`    |
+| `summary_prune_ratio`   | Float   | No | Ratio for pruning cluster summary vectors | `0.4`                 | $$(0, 1]$$      | `0.3`     |
+| `approximate_threshold` | Integer | No | Document threshold for SEISMIC activation | `1000000`             | $$[0, \infty)$$ | `500000`  |
+| `quantization_ceiling_search`  | Float   | No | Document threshold for SEISMIC activation | `16`                  | $$(0, \infty)$$ | `3`       |
+| `quantization_ceiling_ingest` | Float | No | Document threshold for SEISMIC activation | `3`                   | $$(0, \infty)$$ | `2.5`     |
+
+¹doc count here is segment level
+
 ### Example
 
 Create a mapping with a sparse vector field.
