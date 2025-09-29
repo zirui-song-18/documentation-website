@@ -11,7 +11,7 @@ has_children: true
 Introduced 3.3.0
 {: .label .label-purple }
 
-**A**pproximate **N**earest **N**eighbor (ANN) algorithm gets more and more popular in recent days with its fast query performance and flexibility of tuning the trade-off between accuracy and latency. Among so many kinds of ANN algorithms, SEISMIC (**S**pilled Clust**e**ring of **I**nverted Lists with **S**ummaries for **M**aximum **I**nner Produ**c**t Search from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is specifically designed to accelerate neural sparse search. Unlike traditional sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors.
+**A**pproximate **N**earest **N**eighbor (ANN) algorithm gets more and more popular in recent days with its query efficiency and flexibility of tuning the trade-off between accuracy and latency. Among so many kinds of ANN algorithms, SEISMIC (**S**pilled Clust**e**ring of **I**nverted Lists with **S**ummaries for **M**aximum **I**nner Produ**c**t Search from "[Efficient Inverted Indexes for Approximate Retrieval over Learned Sparse Representations](https://arxiv.org/abs/2404.18812)" paper) is specifically designed to accelerate neural sparse search. Unlike sparse encoding methods, SEISMIC is not an encoding algorithm itself, but rather an indexing and retrieval optimization technique that significantly improves query performance for existing neural sparse vectors.
 
 SEISMIC brings better scalability for neural sparse search especially for those large-scale datasets with billions of vectors. This innovative approach leverages clustered posting lists and approximate retrieval techniques to maintain consistently fast query speeds, even as data scales exponentially. SEISMIC's architecture ensures that query performance remains robust and efficient regardless of dataset size, providing the scalability needed for enterprise-level neural sparse search applications.
 
@@ -43,14 +43,14 @@ During query execution, sparse ANN employs an efficient retrieval process:
 
 3. **Document-level scoring**: For selected clusters, sparse ANN examines individual documents within those clusters, computing exact dot product scores between the query and document vectors retrieved from the forward index.
 
-This approach dramatically reduces the number of documents that need to be scored, resulting in significant performance improvements while maintaining high recall accuracy.
+This approach dramatically reduces the number of documents that need to be scored, resulting in significant performance improvements while maintaining high accuracy.
 
 ### Hybrid indexing behavior
 
 Sparse ANN uses a hybrid indexing approach based on doc size on segments to achieve a balance between indexing performance and query performance:
 
-- **Segments with doc count below `approximate_threshold`**: Still build plain neural sparse (rank features) index and search with existing neural sparse query
-- **Segments with doc count above `approximate_threshold`**: Build sparse ANN index and search with sparse ANN query
+- **Segments with doc count below `approximate_threshold`**: Still build plain neural sparse (rank features) segments and search with existing neural sparse query
+- **Segments with doc count above `approximate_threshold`**: Build sparse ANN segments and search with sparse ANN query
 
 This ensures optimal performance across different data scales while maintaining indexing efficiency for smaller datasets. It also provides good backward compatibility that users can still make plain neural sparse query
 
@@ -62,7 +62,7 @@ Sparse ANN offers several advantages over traditional neural sparse search appro
 - **Scalability**: Maintains consistent query performance even as datasets scale to 50 Million vectors in a single node
 - **Memory efficiency**: Uses optimized caching strategies and quantization to manage memory usage
 - **Hybrid approach**: Automatically selects the optimal indexing strategy based on segment size
-- **High search flexibility**: Users can smoothly tune the trade-off between high recall and low latency with the help of cut & heap_factor these two parameters
+- **High search flexibility**: Users can smoothly tune the trade-off between high recall and low latency with the help of `top_n` & `heap_factor` these two parameters
 
 ## Configuration parameters
 
@@ -76,7 +76,7 @@ Sparse ANN provides several parameters to optimize performance for different use
 
 - **n_postings**: Number of top documents to retain for each posting list (default: 0.0005 * document number in a segment)
 - **cluster_ratio**: Ratio used to determine cluster count in posting lists (default: 0.1)
-- **summary_prune_ratio**: Ratio of tokens to keep in cluster summary vectors (default: 0.4)
+- **summary_prune_ratio**: Ratio of token weights to keep in cluster summary vectors (default: 0.4)
 - **approximate_threshold**: Document count threshold that triggers sparse ANN algorithm on a segment (default: 1,000,000)
 
 More details can be seen in [sparse ANN index setting]({{site.url}}{{site.baseurl}}/field-types/supported-field-types/index/)
@@ -136,7 +136,6 @@ For detailed setup instructions, see [sparse ANN configuration]({{site.url}}{{si
 - [Configure sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration/) for detailed setup instructions
 - [Explore sparse ANN performance tuning]({{site.url}}{{site.baseurl}}/vector-search/performance-tuning-sparse/) for practical implementation guidance
 - Learn about [neural sparse search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-search/) fundamentals
-- Discover [hybrid search]({{site.url}}{{site.baseurl}}/vector-search/ai-search/hybrid-search/) techniques
 
 ## Further reading
 

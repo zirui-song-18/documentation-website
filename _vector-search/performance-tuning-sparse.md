@@ -38,7 +38,7 @@ These parameters affect search performance and recall:
 
 - **`top_n`**: Query token pruning limit
 
-In sparse ANN algorithm, a query's tokens will be pruned to only keep `top_n` ones based on their weights. This parameter will dramatically affect the balance between search performance (latency) and query accuracy (recall). Higher `top_n` will bring with higher accuracy and latency.
+In sparse ANN algorithm, a query's tokens will be pruned to only keep `top_n` ones based on their weights. This parameter will dramatically affect the balance between search efficiency (latency) and query accuracy (recall). Higher `top_n` will bring with higher accuracy and latency.
 
 - **`heap_factor`**: Recall vs performance tuning multiplier
 
@@ -52,7 +52,7 @@ Index building can benefit from multiple thread working, you can adjust the numb
 
 ### Query after cold start
 
-If you just reboot OpenSearch service, there are no data in cache, so first hundreds of query requests could suffer from empty cache which leads to high query latency. To mitigate this "cold start" issue, you can call `warmup` API according to [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/). This API will automatically load data from disk to cache, making sure the following query can have best performance. In contrast, you can also call `clear_cache` API to free memory usage.
+If you just reboot OpenSearch service, there are no data in cache, so first hundreds of query requests could suffer from empty cache which leads to high query latency. To mitigate this "cold start" issue, you can call `warmup` API according to [Neural Search API]({{site.url}}{{site.baseurl}}/vector-search/api/neural/). This API will automatically load data from disk to cache, making sure the following query can have best performance. Meanwhile, you can also call `clear_cache` API to free memory usage.
 
 ### Force merge into one segment
 
@@ -68,7 +68,7 @@ POST /sparse-ann-documents/_forcemerge?max_num_segments=1
 - Start with default parameters and tune based on your specific dataset
 - Monitor memory usage and adjust cache settings accordingly
 - Consider the trade-off between indexing time and query performance
-- Do not combine sparse ANN field and two-phase pipeline in hybrid search
+- Do not combine sparse ANN field and two-phase pipeline together
 
 ## Next steps
 

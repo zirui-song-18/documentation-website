@@ -135,7 +135,7 @@ PUT /_cluster/settings
 {% include copy-curl.html %}
 
 ### Memory and caching settings
-Sparse ANN equipped a circuit breaker to prevent the algorithm consuming too much memory, so users do not need to worry about affecting other OpenSearch functionalities. The default value of `circuit_breaker.limit` is $$10\%$$, and you can set a different limit value to control the total memory the algorithm will use. Once the memory reaches this limit, a cache eviction would incur and data which are used least frequently will be evicted. Here is an example to call the circuit breaker cluster setting API:
+Sparse ANN equips a circuit breaker to prevent the algorithm consuming too much memory, so users do not need to worry about affecting other OpenSearch functionalities. The default value of `circuit_breaker.limit` is $$10\%$$, and you can set a different limit value to control the total memory the algorithm will use. Once the memory reaches this limit, a cache eviction would occur and data which are used least recently will be evicted. Here is an example to call the circuit breaker cluster setting API:
 ```json
 PUT _cluster/settings
 {
