@@ -12,7 +12,7 @@ parent: Supported field types
 
 The `sparse_vector` field supports the sparse ANN (Approximate Nearest Neighbor) algorithm. This significantly boosts the search efficiency while maintaining high search relevance. The `sparse_vector` field is represented as a map, where the keys denote the token with positive [float]({{site.url}}{{site.baseurl}}/opensearch/supported-field-types/numeric/) values indicating the token weight.
 
-For more information, see [Sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic).
+For more information, see [sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-seismic).
     
 ## Parameters
 

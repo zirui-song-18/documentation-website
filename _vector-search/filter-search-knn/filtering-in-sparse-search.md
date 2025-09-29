@@ -7,7 +7,7 @@ nav_order: 40
 
 # Filtering in Sparse ANN Search
 
-You can run [`Sparse ANN query`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration/#sparse-ann-query) query with filtering. Currently, an efficient filtering and post-filtering are supported.
+You can run [`sparse ANN query`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration/#sparse-ann-query) query with filtering. Currently, an efficient filtering and post-filtering are supported.
 
 ## Efficient Sparse ANN Filtering
 When you specify a filter for a sparse ANN search, ANN algorithm decides whether to perform an exact search with pre-filtering or an approximate search with modified post-filtering. The algorithm uses the following variables:
