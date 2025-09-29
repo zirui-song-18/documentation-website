@@ -472,7 +472,7 @@ GET /_tasks
 ```
 {% include copy-curl.html %}
 
-After the operation has finished, use the [neural `_stats` API operation](#stats) to see the updated memory usage.
+After the operation has finished, use the [neural stats API operation](#stats) to see the updated memory usage.
 
 ### Best practices
 
@@ -531,4 +531,4 @@ GET /_tasks
 ```
 {% include copy-curl.html %}
 
-After the operation has finished, use the [neural `_stats` API operation](#stats) to see the updated memory usage.
+After the operation has finished, use the [neural stats API operation](#stats) to see the updated memory usage.

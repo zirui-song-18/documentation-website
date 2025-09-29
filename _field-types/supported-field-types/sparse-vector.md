@@ -156,6 +156,6 @@ GET sparse-vector-index/_search
 ```
 {% include copy-curl.html %}
 
-For more details, you can refer to [`Sparse ANN query`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration/#sparse-ann-query) and [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration).
+For more details on query, you can refer to [`Sparse ANN query`]({{site.url}}{{site.baseurl}}/query-dsl/specialized/neural-sparse/#sparse-ann-query) and [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration).
 {: .note }
 
