@@ -70,6 +70,8 @@ POST _bulk
 ```
 {% include copy-curl.html %}
 
+You can also use [ingestion pipeline]({{site.url}}{{site.baseurl}}/ingest-pipelines/) which automatically adjusts the output format of tokens into Integer
+
 ## Step 3: Conduct a query
 
 Now, you can prepare a query to retrieve information from the index you just built. Please note that you should not combine sparse ANN with [two-phase]({{site.url}}{{site.baseurl}}/search-plugins/search-pipelines/neural-sparse-query-two-phase-processor/) pipeline.

@@ -8,7 +8,7 @@ has_math: true
 
 # Sparse ANN performance tuning
 
-This page provides comprehensive performance tuning guidance for the [sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann/) algorithm in OpenSearch sparse ANN search. Sparse ANN offers multiple parameters that allow you to balance the trade-off between query recall (accuracy) and query performance (latency).
+This page provides comprehensive performance tuning guidance for the [sparse ANN]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann/) algorithm in OpenSearch sparse ANN search. Sparse ANN offers multiple parameters that allow you to balance the trade-off between query recall (accuracy) and query efficiency (latency).
 
 Our sparse ANN feature supports real-time trade-off controlling when users conduct a query by those search-time parameters. This means that users do not have to delete and recreate an index if they want to change the balance between search accuracy and query performance. In total, sparse ANN employs six key parameters that affect different aspects of the algorithm:
 
