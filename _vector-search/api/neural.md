@@ -352,27 +352,27 @@ The following table lists the available statistics. For statistics with paths pr
 
 **Node-level statistics: Query**
 
-| Statistic name | Category | Statistic path within category | Description                                                           |
-| :--- | :--- | :--- |:----------------------------------------------------------------------|
-| `hybrid_query_with_pagination_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_with_pagination_requests` | The number of `hybrid` query requests with pagination.                |
-| `hybrid_query_with_filter_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_with_filter_requests` | The number of `hybrid` query requests with filters.                   |
-| `hybrid_query_with_inner_hits_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_with_inner_hits_requests` | The number of `hybrid` query requests with inner hits.                |
-| `hybrid_query_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_requests` | The total number of `hybrid` query requests.                          |
-| `neural_query_against_semantic_sparse_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_against_semantic_sparse_requests` | The number of `neural` query requests against semantic sparse fields. |
-| `neural_query_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_requests` | The total number of `neural` query requests.                          |
-| `neural_query_against_semantic_dense_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_against_semantic_dense_requests` | The number of `neural` query requests against semantic dense fields.  |
-| `neural_query_against_knn_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_against_knn_requests` | The number of `neural` query requests against k-NN fields.            |
-| `neural_sparse_query_requests` | `nodes`, `all_nodes` | `query.neural_sparse.neural_sparse_query_requests` | The number of `neural_sparse` query requests.                         |
-| `seismic_query_requests` | `nodes`, `all_nodes` | `query.neural_sparse.seismic_query_requests` | The number of Seismic query requests.                                 |
+| Statistic name | Category | Statistic path within category | Description                                                                                                                                |
+| :--- | :--- | :--- |:-------------------------------------------------------------------------------------------------------------------------------------------|
+| `hybrid_query_with_pagination_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_with_pagination_requests` | The number of `hybrid` query requests with pagination.                                                                                     |
+| `hybrid_query_with_filter_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_with_filter_requests` | The number of `hybrid` query requests with filters.                                                                                        |
+| `hybrid_query_with_inner_hits_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_with_inner_hits_requests` | The number of `hybrid` query requests with inner hits.                                                                                     |
+| `hybrid_query_requests` | `nodes`, `all_nodes` | `query.hybrid.hybrid_query_requests` | The total number of `hybrid` query requests.                                                                                               |
+| `neural_query_against_semantic_sparse_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_against_semantic_sparse_requests` | The number of `neural` query requests against semantic sparse fields.                                                                      |
+| `neural_query_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_requests` | The total number of `neural` query requests.                                                                                               |
+| `neural_query_against_semantic_dense_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_against_semantic_dense_requests` | The number of `neural` query requests against semantic dense fields.                                                                       |
+| `neural_query_against_knn_requests` | `nodes`, `all_nodes` | `query.neural.neural_query_against_knn_requests` | The number of `neural` query requests against k-NN fields.                                                                                 |
+| `neural_sparse_query_requests` | `nodes`, `all_nodes` | `query.neural_sparse.neural_sparse_query_requests` | The number of `neural_sparse` query requests.                                                                                              |
+| `seismic_query_requests` | `nodes`, `all_nodes` | `query.neural_sparse.seismic_query_requests` | The number of Seismic ([`sparse ANN`]({{site.url}}{{site.baseurl}}/query-dsl/specialized/neural-sparse/#sparse-ann-query)) query requests. |
 
 **Node-level statistics: Memory**
 
-| Statistic name | Category             | Statistic path within category                                  | Description                                                                                                    |
-| :--- |:---------------------|:----------------------------------------------------------------|:---------------------------------------------------------------------------------------------------------------|
-| `sparse_memory_usage_percentage` | `nodes`              | `memory.sparse.sparse_memory_usage_percentage`                  | The amount of JVM heap memory used to store sparse data on the node as a percentage of the maximum JVM memory. |
-| `sparse_memory_usage` | `nodes`, `all_nodes` | `memory.sparse.sparse_memory_usage`                             | The amount of JVM heap memory used to store sparse data on the node in kilobytes.                              |
-| `clustered_posting_usage` | `nodes`, `all_nodes` | `memory.sparse.clustered_posting_usage`                         | The amount of JVM heap memory used to store clustered posting on the node in kilobytes.                        |
-| `forward_index_usage` | `nodes`, `all_nodes` | `memory.sparse.forward_index_usage`                            | The amount of JVM heap memory used to store forward index on the node in kilobytes.                    |
+| Statistic name | Category             | Statistic path within category                                  | Description                                                                                                 |
+| :--- |:---------------------|:----------------------------------------------------------------|:------------------------------------------------------------------------------------------------------------|
+| `sparse_memory_usage_percentage` | `nodes`              | `memory.sparse.sparse_memory_usage_percentage`                  | The percentage of JVM heap memory used to store sparse data on the node relative to the maximum JVM memory. |
+| `sparse_memory_usage` | `nodes`, `all_nodes` | `memory.sparse.sparse_memory_usage`                             | The amount of JVM heap memory used to store sparse data on the node in kilobytes.                           |
+| `clustered_posting_usage` | `nodes`, `all_nodes` | `memory.sparse.clustered_posting_usage`                         | The amount of JVM heap memory used to store clustered posting on the node in kilobytes.                     |
+| `forward_index_usage` | `nodes`, `all_nodes` | `memory.sparse.forward_index_usage`                            | The amount of JVM heap memory used to store forward index on the node in kilobytes.                         |
 
 **Node-level statistics: Semantic highlighting**
 
@@ -424,9 +424,9 @@ The `timestamped_event_counter` object contains the following metadata fields.
 Introduced 3.3
 {: .label .label-purple }
 
-The sparse indices support sparse ANN (Approximate Nearest Neighbor) search. To maximize the search efficiency, the neural plugin caches sparse data in JVM memory.
+The sparse indices support sparse ANN (Approximate Nearest Neighbor) search. To maximize search efficiency, the neural plugin caches sparse data in JVM memory.
 
-If the plugin has not loaded the sparse data into JVM memory, then it loads the data when it receives a search request. This loading time can cause high latency during initial queries. To avoid this, users often run random queries during a warmup period. After this warmup period, the sparse data are loaded into JVM memory, and their production workloads can launch. This loading process is indirect and requires extra effort.
+If the plugin has not loaded sparse data into JVM memory, then it loads data when it receives a search request. Loading time can cause high latency during initial queries. To avoid this, users often run random queries during a warmup period. After this warmup period, sparse data are loaded into JVM memory, and their production workloads can launch. This loading process is indirect and requires extra effort.
 
 As an alternative, you can avoid this latency issue by running the neural plugin warmup API operation on the indices you want to search. This operation loads all the sparse data for all the shards (primaries and replicas) of all the indices specified in the request into JVM memory.
 
@@ -476,7 +476,7 @@ After the operation has finished, use the [neural stats API operation](#stats) t
 
 ### Best practices
 
-For the warmup operation to function properly, follow these best practices:
+To make the warmup operation work properly, follow these best practices:
 
 * Do not run merge operations on indices that you want to warm up. During a merge operation, the neural plugin creates new segments, and old segments are sometimes deleted. For example, you could encounter a situation in which the warmup API operation loads sparse indices A and B into native memory but segment C is created from segments A and B being merged. Sparse indices A and B would no longer be in memory, and sparse index C would also not be in memory. In this case, the initial penalty for loading sparse index C still exists.
 

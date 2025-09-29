@@ -29,12 +29,12 @@ The `sparse_vector` field type supports the following parameters.
 | `quantization_ceiling_ingest` | Float | No | Ceiling float value to consider during ingest | `3`                   | (0, +∞)     | `2.5`     |
 
 
-¹Here, `doc_count` represents the number of segments within the segment.
+¹`doc_count` represents the number of documents within the segment.
 
-For parameter configuration, you can refer to [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration)  
+For parameter configuration, you can refer to [`sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration)  
 {: .note }
 
-To increase search efficiency and reduce memory consumption, the `sparse_vector` field automatically performs quantization on the token weight. You can adjust the parameter `quantization_ceiling_search` and `quantization_ceiling_ingest` according to token weight distribution. For doc-only queries, we recommend the default value. If you're querying with bi-encoder mode alone, we recommend setting `quantization_ceiling_search` to `3`. 
+To increase search efficiency and reduce memory consumption, the `sparse_vector` field automatically performs quantization on the token weight. You can adjust the parameter `quantization_ceiling_search` and `quantization_ceiling_ingest` according to different token weight distribution. For doc-only queries, we recommend the default value (`16`). If you're querying with bi-encoder mode alone, we recommend setting `quantization_ceiling_search` to `3`. For doc-only and bi-encoder mode, you can refer to [`sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-with-pipelines/) for more details. 
 {: .note }
 
 ## Example
@@ -157,6 +157,6 @@ GET sparse-vector-index/_search
 ```
 {% include copy-curl.html %}
 
-For more details on query, you can refer to [`Sparse ANN query`]({{site.url}}{{site.baseurl}}/query-dsl/specialized/neural-sparse/#sparse-ann-query) and [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration).
+For more details on query, you can refer to [`sparse ANN query`]({{site.url}}{{site.baseurl}}/query-dsl/specialized/neural-sparse/#sparse-ann-query) and [`sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration).
 {: .note }
 
