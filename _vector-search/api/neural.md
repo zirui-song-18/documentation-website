@@ -437,10 +437,16 @@ This API operation only works with indices created with `index.sparse` setting t
 
 #### Example request
 
-The following request performs a warmup on three indices:
+The following request performs a warmup operation on three indices:
 
 ```json
 POST /_plugins/_neural/warmup/index1,index2,index3?pretty
+```
+{% include copy-curl.html %}
+
+You may receive response as the following:
+
+```json
 {
   "_shards" : {
     "total" : 6,
@@ -449,7 +455,6 @@ POST /_plugins/_neural/warmup/index1,index2,index3?pretty
   }
 }
 ```
-{% include copy-curl.html %}
 
 The `total` value indicates the number of shards that the neural plugin attempted to warm up. The response also includes the number of shards that the plugin successfully warmed up and failed to warm up.
 
@@ -457,13 +462,6 @@ The warmup API can be used with index patterns to clear one or more indices that
 
 ```json
 POST /_plugins/_neural/warm_up/index*?pretty
-{
-  "_shards" : {
-    "total" : 6,
-    "successful" : 6,
-    "failed" : 0
-  }
-}
 ```
 {% include copy-curl.html %}
 
@@ -502,6 +500,12 @@ The following request evicts the sparse data of three indices from the JVM memor
 
 ```json
 POST /_plugins/_neural/clear_cache/index1,index2,index3?pretty
+```
+{% include copy-curl.html %}
+
+You may receive response as the following:
+
+```json
 {
   "_shards" : {
     "total" : 6,
@@ -510,7 +514,6 @@ POST /_plugins/_neural/clear_cache/index1,index2,index3?pretty
   }
 }
 ```
-{% include copy-curl.html %}
 
 The `total` parameter indicates the number of shards that the API attempted to clear from the cache. The response includes both the number of cleared shards and the number of shards that the plugin failed to clear.
 
@@ -518,13 +521,6 @@ The neural search clear cache API can be used with index patterns to clear one o
 
 ```json
 POST /_plugins/_neural/clear_cache/index*?pretty
-{
-  "_shards" : {
-    "total" : 6,
-    "successful" : 6,
-    "failed" : 0
-  }
-}
 ```
 {% include copy-curl.html %}
 

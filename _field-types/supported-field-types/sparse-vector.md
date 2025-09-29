@@ -33,7 +33,7 @@ The `sparse_vector` field type supports the following parameters.
 For parameter configuration, you can refer to [`Neural Sparse ANN configuration`]({{site.url}}{{site.baseurl}}/vector-search/ai-search/neural-sparse-ann-configuration)  
 {: .note }
 
-For search efficiency and reduce memory consumption, the `sparse_vector` field automatically performs quantization on the token weight. You can adjust the parameter `quantization_ceiling_search` and `quantization_ceiling_ingest` according to token weight distribution. For doc-only queries, we recommend the default value. If you're querying only with bi-encoder queries, we recommend setting `quantization_ceiling_search` to `3`. 
+To increase search efficiency and reduce memory consumption, the `sparse_vector` field automatically performs quantization on the token weight. You can adjust the parameter `quantization_ceiling_search` and `quantization_ceiling_ingest` according to token weight distribution. For doc-only queries, we recommend the default value. If you're querying with bi-encoder mode alone, we recommend setting `quantization_ceiling_search` to `3`. 
 {: .note }
 
 ## Example
